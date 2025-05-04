@@ -1,0 +1,17 @@
+  - platform: wifi_signal    
+    name: "WiFi Signal Sensor"
+    update_interval: 60s
+    web_server_sorting_weight: 10
+
+  - platform: ld2420          
+    moving_distance:
+      unit_of_measurement: "cm"
+      state_class: "measurement"      
+      name : Odleglość
+      id: moving_dist
+      on_value:
+        then:
+          - logger.log:
+              level: INFO
+              format: "Distance: %.1f cm"
+              args: [ 'id(moving_dist).state' ]

@@ -1,0 +1,6 @@
+#display:
+  - platform: lcd_pcf8574
+    dimensions: 20x4
+    address: 0x27
+    lambda: |-
+      it.print("Hello World!");

@@ -1,0 +1,6 @@
+  - platform: status
+    name: ${name} Status
+    
+  - platform: ld2420
+    has_target:
+      name: Presence

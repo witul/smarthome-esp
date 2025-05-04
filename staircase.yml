@@ -1,0 +1,23 @@
+substitutions:
+  name: staircase
+  friendly_name: klatka
+  domain: home.arpa
+
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  comment: "Kontroler klatki schodowej"
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: witul.smarthome
+    version: '1.0'
+
+
+
+#<<: !include common/device_info.yml
+
+
+
+<<: !include common/common.yml

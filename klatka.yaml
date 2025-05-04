@@ -1,0 +1,144 @@
+substitutions:
+  name: "esp-klatka"
+  i2c_sda_pin: GPIO21
+  i2c_scl_pin: GPIO22
+  uart_tx_pin: GPIO17
+  uart_rx_pin: GPIO16
+
+
+esphome:
+  name: ${name}
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  level: DEBUG
+
+debug:
+  update_interval: 1s
+  
+# Enable Home Assistant API
+#api:
+#  password: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+i2c:
+  sda: ${i2c_sda_pin}
+  scl: ${i2c_scl_pin}
+  scan: true
+
+uart:
+  tx_pin: ${uart_tx_pin}
+  rx_pin: ${uart_rx_pin}
+  baud_rate: 115200
+
+wifi:
+  ssid: "Domek"
+  password: "kukuryku"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "${name} Fallback Hotspot"
+    password: "kukuryku"
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+captive_portal:
+
+web_server:
+  local: true
+  version: 3
+  #auth:
+  #  username: !secret web_server_username
+    #  password: !secret web_server_password            
+
+
+
+status_led:
+  pin:
+    number: LED
+    inverted: true      
+
+switch:
+  - platform: safe_mode
+    name: ${name} Safe Mode
+
+ld2420:
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    web_server_sorting_weight: 10
+
+  - platform: wifi_info
+    ip_address:
+      name: ${name} IP Address
+    ssid:
+      name: ${name} SSID
+    bssid:
+      name: ${name} BSSID
+
+  - platform: debug
+    device:
+      name: "Device Info"
+      id: "asd"
+    reset_reason:
+      name: "Reset Reason"
+
+  - platform: ld2420
+    fw_version:
+      name: LD2420 Firmware        
+
+sensor: !include klatka/sensor.yml
+binary_sensor: !include klatka/sensor-binary.yml
+
+
+select:
+  - platform: ld2420
+    operating_mode:
+      name: Operating Mode
+
+number:
+  - platform: ld2420
+    presence_timeout:
+      name: Detection Presence Timeout
+
+    gate_move_sensitivity:
+      name: Gate move sensitivity
+
+    min_gate_distance:
+      name: Detection Gate Minimum
+
+    max_gate_distance:
+      name: Detection Gate Maximum
+
+    # See "Number" section below for detail
+    gate_select:
+      name: Select Gate to Set
+
+    still_threshold:
+      name: Set Still Threshold Value
+      
+    move_threshold:
+      name: Set Move Threshold Value
+
+button:
+  - platform: ld2420
+    apply_config:
+      name: Apply Config
+    factory_reset:
+      name: Factory Reset
+    restart_module:
+      name: Restart Module
+    revert_config:
+      name: Undo Edits                
