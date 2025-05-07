@@ -1,6 +1,11 @@
-esphome:
+packages:
+  common: !include common/base.yaml
+  
+esphome:  
   name: lazienka-led
+  comment: "Sterowanie oświetleniem LED"
   friendly_name: Sterownik LED Lazienka
+  area: bathroom  
   name_add_mac_suffix: false
   project:
     name: iot.home
@@ -96,3 +101,6 @@ light:
     id: light_0
     restore_mode: RESTORE_DEFAULT_OFF            
   
+
+
+

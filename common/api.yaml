@@ -1,0 +1,2 @@
+api:
+  password: !secret homeassistant_api_key
