@@ -1,1 +1,252 @@
-devices/ogrzewanie.yaml
+esphome:
+  name: ogrzewanie-mcu
+  friendly_name: Sterownik Ogrzewania
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: '1.0'
+
+  #area:
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+    version: recommended
+
+mdns:
+  disabled: true
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: ".iot.home.arpa"
+  
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Ogrzewanie MCU AP"
+    password: "kukuryku"
+
+#Allow provisioning Wi-Fi via serial
+improv_serial:
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+
+dashboard_import:
+  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
+  import_full_config: true
+
+
+# Sets up Bluetooth LE (Only on ESP32) to allow the user
+# to provision wifi credentials to the device.
+esp32_improv:
+  authorizer: none
+
+
+one_wire:
+  - platform: gpio
+    pin: GPIO26
+    id: one_wire_1
+  - platform: gpio
+    pin: GPIO18
+    id: one_wire_2
+  - platform: gpio
+    pin: GPIO19
+    id: one_wire_3
+  - platform: gpio
+    pin: GPIO5
+    id: one_wire_4
+  - platform: gpio
+    pin: GPIO17
+    id: one_wire_5
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: ""
+
+ota:
+  platform: esphome
+  password: ""
+
+web_server:
+  port: 8080
+
+i2c:
+  sda: GPIO23
+  scl: GPIO22
+  scan: false
+
+  #status_led:
+  #  pin: 
+  #    number: GPIO2
+  #    inverted: false
+
+sensor:
+  - platform: uptime
+    name: "Uptime"
+    id: mcu_uptime
+
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 30s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
+    
+  - platform: dallas_temp
+    id: temp_1
+    address: "0xcc65c7d446950328"
+    one_wire_id: one_wire_1
+    name: "Temp Pod. Salon #1"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1    
+
+  - platform: dallas_temp  
+    id: temp_2
+    one_wire_id: one_wire_1
+    address: "0x9751cfd446dd8928"
+    name: "Temp Pod. Salon #2"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1    
+    
+  - platform: dallas_temp
+    id: temp_3  
+    address: "0x943c01e076247d28"
+    name: "Temp Pod. Salon #3"
+    one_wire_id: one_wire_2
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1
+
+    
+  - platform: dallas_temp
+    id: temp_4
+    address: "0x9e3c01e076378028"
+    one_wire_id: one_wire_2
+    name: "Temp Pod. Pokój"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1    
+
+  - platform: dallas_temp
+    id: temp_5
+    address: "0x73215fd446309f28"
+    one_wire_id: one_wire_1
+    name: "Temp Pod. Sypialnia"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1    
+
+  - platform: dallas_temp
+    id: temp_6
+    address: "0x285eb5d44646be28"
+    one_wire_id: one_wire_1
+    name: "Temp Pod. Łazienka"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1    
+
+pcf8574:
+  - id: 'pcf8574_hub'
+    address: 0x20
+    pcf8575: false
+
+switch:
+  - platform: gpio
+    name: "Siłownik #1"
+    pin:
+      pcf8574: pcf8574_hub    
+      number: 0
+      mode:
+        output: true
+      inverted: true
+      
+  - platform: gpio
+    name: "Siłownik #2"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 1
+      mode:
+        output: true
+      inverted: true 
+      
+  - platform: gpio
+    name: "Siłownik #3"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 2
+      mode:
+        output: true
+      inverted: true   
+      
+  - platform: gpio
+    name: "Siłownik #4"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 3
+      mode:
+        output: true
+      inverted: true 
+  - platform: gpio
+    name: "Siłownik #5"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 4
+      mode:
+        output: true
+      inverted: true   
+      
+  - platform: gpio
+    name: "Siłownik #6"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 5
+      mode:
+        output: true
+      inverted: true
+
+  - platform: gpio
+    name: "Siłownik #7"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 6
+      mode:
+        output: true
+      inverted: true   
+      
+  - platform: gpio
+    name: "Siłownik #8"
+    pin:
+      pcf8574: pcf8574_hub
+      number: 7
+      mode:
+        output: true
+      inverted: true 

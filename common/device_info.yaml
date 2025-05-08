@@ -22,3 +22,6 @@ sensor:
     psram:
       name: "Free PSRAM"
 
+ binary_sensor:
+  - platform: status
+    name: "Status"     

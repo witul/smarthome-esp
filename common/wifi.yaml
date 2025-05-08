@@ -10,11 +10,10 @@ wifi:
     
 captive_portal:
 
-mdns:
-  disabled: false
-  
 improv_serial:
-
 
 esp32_improv:
   authorizer: none
+  
+mdns:
+  disabled: false  

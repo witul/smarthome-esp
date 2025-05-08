@@ -1,0 +1,13 @@
+esphome:
+  name: esp-host
+  friendly_name: esp_host
+  name_add_mac_suffix: false
+  project:
+    name: iot.home
+    version: '1.0'
+    
+host:
+  
+# Enable logging
+logger:
+

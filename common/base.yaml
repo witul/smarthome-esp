@@ -3,7 +3,6 @@ esphome:
   project:
     name: iot.home
     version: '1.0'
-
 mdns:
   disabled: false
 
@@ -13,22 +12,10 @@ esp32:
     type: arduino
     version: recommended
     
-
 improv_serial:
-captive_portal:
 
 esp32_improv:
   authorizer: none
-
-    
-#    type: esp-idf
-#    version: recommended
-    # Custom sdkconfig options
-#    sdkconfig_options:
-#      COMPILER_OPTIMIZATION_SIZE: y
-    # Advanced tweaking options
-#    advanced:
-#      ignore_efuse_mac_crc: false
 
 # Wspólne komponenty
 <<: !include wifi.yaml
@@ -36,5 +23,3 @@ esp32_improv:
 <<: !include api.yaml
 <<: !include logger.yaml
 <<: !include webserver.yaml
-
-

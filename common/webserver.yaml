@@ -1,7 +1,7 @@
 web_server:
   port: 8080
   enable_private_network_access: true
-  include_internal: false
+  include_internal: true
   ota: true
   log: true
   local: true
