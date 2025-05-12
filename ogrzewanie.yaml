@@ -3,7 +3,7 @@ esphome:
   friendly_name: Sterownik Ogrzewania
   name_add_mac_suffix: false
   project:
-    name: esphome.web
+    name: iot.home
     version: '1.0'
 
   #area:
@@ -15,7 +15,7 @@ esp32:
     version: recommended
 
 mdns:
-  disabled: true
+  disabled: false
 
 wifi:
   ssid: !secret wifi_ssid
@@ -174,16 +174,10 @@ sensor:
     state_class: "measurement"
     accuracy_decimals: 1    
 
-pcf8574:
-  - id: 'pcf8574_hub'
-    address: 0x20
-    pcf8575: false
-
 switch:
   - platform: gpio
     name: "Siłownik #1"
     pin:
-      pcf8574: pcf8574_hub    
       number: 0
       mode:
         output: true
@@ -192,7 +186,6 @@ switch:
   - platform: gpio
     name: "Siłownik #2"
     pin:
-      pcf8574: pcf8574_hub
       number: 1
       mode:
         output: true
@@ -201,7 +194,6 @@ switch:
   - platform: gpio
     name: "Siłownik #3"
     pin:
-      pcf8574: pcf8574_hub
       number: 2
       mode:
         output: true
@@ -210,7 +202,6 @@ switch:
   - platform: gpio
     name: "Siłownik #4"
     pin:
-      pcf8574: pcf8574_hub
       number: 3
       mode:
         output: true
@@ -218,7 +209,6 @@ switch:
   - platform: gpio
     name: "Siłownik #5"
     pin:
-      pcf8574: pcf8574_hub
       number: 4
       mode:
         output: true
@@ -227,8 +217,7 @@ switch:
   - platform: gpio
     name: "Siłownik #6"
     pin:
-      pcf8574: pcf8574_hub
-      number: 5
+      number: 13
       mode:
         output: true
       inverted: true
@@ -236,17 +225,14 @@ switch:
   - platform: gpio
     name: "Siłownik #7"
     pin:
-      pcf8574: pcf8574_hub
-      number: 6
+      number: 10
       mode:
         output: true
-      inverted: true   
-      
+      inverted: true
   - platform: gpio
     name: "Siłownik #8"
     pin:
-      pcf8574: pcf8574_hub
-      number: 7
+      number: 12
       mode:
         output: true
-      inverted: true 
+      inverted: true

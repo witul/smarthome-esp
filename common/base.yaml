@@ -19,7 +19,6 @@ esp32_improv:
 
 # Wspólne komponenty
 <<: !include wifi.yaml
-<<: !include ota.yaml
 <<: !include api.yaml
 <<: !include logger.yaml
 <<: !include webserver.yaml

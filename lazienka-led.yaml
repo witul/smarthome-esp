@@ -1,5 +1,6 @@
 packages:
   common: !include common/base.yaml
+  ota: !include common/ota.yaml
   
 esphome:  
   name: lazienka-led
@@ -21,7 +22,6 @@ wifi:
       subnet: 255.255.255.0
       
 button:
-
   - platform: template
     name: "Impuls GPIO13"
     on_press:
@@ -32,11 +32,11 @@ button:
 
 
   - platform: restart
-    name: "Living Room Restart"
+    name: "Restart"    
 
   - platform: template
     id: btn_minus
-    name: "Przycisk Minus"
+    name: "Minus"
     on_press:
       then:
         - light.dim_relative:
@@ -46,7 +46,7 @@ button:
             id(current_values) = id(light_0).current_values.get_brightness();
 
   - platform: template
-    name: "Przycisk Plus"
+    name: "Plus"    
     id: button_up
     on_press:
       then:
@@ -60,7 +60,7 @@ output:
   - platform: ledc
     pin: GPIO0
     id: output_led
-    frequency: 1000Hz
+    frequency: 1200Hz
     zero_means_zero: true
     min_power: 0.01
     max_power: 1
@@ -98,6 +98,11 @@ light:
             off_length: 500ms
           update_interval: 1.5s
 
+  - platform: status_led
+    name: "Status LED"
+    pin: GPIO2
+
+
 switch:
   - platform: output
     name: "Wirtualny Przycisk GPIO12"
@@ -115,3 +120,8 @@ switch:
  #   on_state:
  #     then:
  #       - switch.turn_off: relay_1
+
+
+binary_sensor:
+  - platform: template
+    name: "Stan Wirtualnego Przycisku"      
