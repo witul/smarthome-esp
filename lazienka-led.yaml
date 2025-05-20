@@ -22,15 +22,6 @@ wifi:
       subnet: 255.255.255.0
       
 button:
-  - platform: template
-    name: "Impuls GPIO13"
-    on_press:
-      then:
-        - output.turn_on: wyjscie_g13
-        - delay: 2000ms
-        - output.turn_off: wyjscie_g13
-
-
   - platform: restart
     name: "Restart"    
 
@@ -101,27 +92,3 @@ light:
   - platform: status_led
     name: "Status LED"
     pin: GPIO2
-
-
-switch:
-  - platform: output
-    name: "Wirtualny Przycisk GPIO12"
-    id: switch_g13
-    output: wyjscie_g13
-    restore_mode: ALWAYS_OFF
-    on_turn_on:
-    - output.turn_on: wyjscie_g13
-    - delay: 1000ms
-    - output.turn_off: wyjscie_g13
-
-#binary_sensor:
-#  - platform: gpio
-#    # ...
- #   on_state:
- #     then:
- #       - switch.turn_off: relay_1
-
-
-binary_sensor:
-  - platform: template
-    name: "Stan Wirtualnego Przycisku"      

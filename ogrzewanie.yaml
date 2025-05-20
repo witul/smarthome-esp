@@ -27,17 +27,9 @@ wifi:
     ssid: "Ogrzewanie MCU AP"
     password: "kukuryku"
 
-#Allow provisioning Wi-Fi via serial
-improv_serial:
-
 # In combination with the `ap` this allows the user
 # to provision wifi credentials to the device via WiFi AP.
 captive_portal:
-
-
-dashboard_import:
-  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
-  import_full_config: true
 
 
 # Sets up Bluetooth LE (Only on ESP32) to allow the user
@@ -45,26 +37,17 @@ dashboard_import:
 esp32_improv:
   authorizer: none
 
+modbus:
 
 one_wire:
   - platform: gpio
-    pin: GPIO26
-    id: one_wire_1
-  - platform: gpio
-    pin: GPIO18
-    id: one_wire_2
-  - platform: gpio
-    pin: GPIO19
-    id: one_wire_3
-  - platform: gpio
-    pin: GPIO5
-    id: one_wire_4
-  - platform: gpio
-    pin: GPIO17
-    id: one_wire_5
+    pin: GPIO14
+    id: one_wire_1      
+    
 
 # Enable logging
 logger:
+  baud_rate: 0
 
 # Enable Home Assistant API
 api:
@@ -76,16 +59,25 @@ ota:
 
 web_server:
   port: 8080
+  version: 3
+  include_internal: true
+
+uart:
+  rx_pin: 3
+  tx_pin: 1
+  baud_rate: 9600
 
 i2c:
   sda: GPIO23
   scl: GPIO22
   scan: false
 
-  #status_led:
-  #  pin: 
-  #    number: GPIO2
-  #    inverted: false
+binary_sensor:
+  - platform: template
+    name: "Grzałka - Stan"
+    lambda: |-
+      return (id(grzalka_moc).state > 5.0);
+    id: grzalka_status    
 
 sensor:
   - platform: uptime
@@ -106,7 +98,7 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
-    
+
   - platform: dallas_temp
     id: temp_1
     address: "0xcc65c7d446950328"
@@ -133,18 +125,17 @@ sensor:
     id: temp_3  
     address: "0x943c01e076247d28"
     name: "Temp Pod. Salon #3"
-    one_wire_id: one_wire_2
+    one_wire_id: one_wire_1
     unit_of_measurement: "°C"
     icon: "mdi:water-percent"
     device_class: "temperature"
     state_class: "measurement"
     accuracy_decimals: 1
-
     
   - platform: dallas_temp
     id: temp_4
     address: "0x9e3c01e076378028"
-    one_wire_id: one_wire_2
+    one_wire_id: one_wire_1
     name: "Temp Pod. Pokój"
     unit_of_measurement: "°C"
     icon: "mdi:water-percent"
@@ -172,67 +163,110 @@ sensor:
     icon: "mdi:water-percent"
     device_class: "temperature"
     state_class: "measurement"
-    accuracy_decimals: 1    
+    accuracy_decimals: 1
+
+  - platform: pzemac
+    current:
+      name: "Grzałka - Prąd"
+      internal: true
+      id: grzalka_prad
+    voltage:
+      name: "Grzałka - Napięcie"
+      internal: true
+      id: grzalka_napiecie
+    energy:
+      name: "Grzałka - Energia"
+      id: grzalka_energia
+    power:
+      name: "Grzałka - Moc"
+      id: grzalka_moc
+    frequency:
+      name: "Grzałka - Częstotliwość"
+      internal: true
+      id: grzalka_czestotliwosc
+    power_factor:
+      name: "Grzałka - Wsp. mocy"
+      internal: true
+      id: grzalka_wsp_mocy
+    update_interval: 5s
+
 
 switch:
+      
   - platform: gpio
-    name: "Siłownik #1"
+    name: "Ogrzewanie - Grzejnik"
+    pin:
+      number: 17
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: gpio
+    name: "Ogrzewanie - Łazienka"    
+    pin:
+      number: 2
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON      
+
+  - platform: gpio
+    name: "Ogrzewanie Salon I"
+    pin:
+      number: 16
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF      
+  
+  - platform: gpio
+    name: "Ogrzewanie Salon II"
     pin:
       number: 0
       mode:
         output: true
       inverted: true
-      
+    restore_mode: RESTORE_DEFAULT_OFF
+
   - platform: gpio
-    name: "Siłownik #2"
-    pin:
-      number: 1
-      mode:
-        output: true
-      inverted: true 
-      
-  - platform: gpio
-    name: "Siłownik #3"
-    pin:
-      number: 2
-      mode:
-        output: true
-      inverted: true   
-      
-  - platform: gpio
-    name: "Siłownik #4"
-    pin:
-      number: 3
-      mode:
-        output: true
-      inverted: true 
-  - platform: gpio
-    name: "Siłownik #5"
+    name: "Ogrzewanie Kuchnia"
     pin:
       number: 4
       mode:
         output: true
-      inverted: true   
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF      
       
   - platform: gpio
-    name: "Siłownik #6"
+    name: "Ogrzewanie - Pokój"
     pin:
-      number: 13
+      number: 5
       mode:
         output: true
       inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+      
+  - platform: gpio
+    name: "Ogrzewanie - Sypialnia"
+    pin:
+      number: 18
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
 
   - platform: gpio
-    name: "Siłownik #7"
+    name: "Grzałka przekaznik"
+    id: grzalka_przekaznik
     pin:
-      number: 10
+      number: 19
       mode:
         output: true
       inverted: true
-  - platform: gpio
-    name: "Siłownik #8"
-    pin:
-      number: 12
-      mode:
-        output: true
-      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON
+      
+select:
+  - platform: logger
+    name: "Logger select"

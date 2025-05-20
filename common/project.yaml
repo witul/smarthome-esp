@@ -1,0 +1,5 @@
+esphome:
+  name_add_mac_suffix: false
+  project:
+    name: iot.home
+    version: '1.0'

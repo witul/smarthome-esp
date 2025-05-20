@@ -10,10 +10,5 @@ wifi:
     
 captive_portal:
 
-improv_serial:
-
-esp32_improv:
-  authorizer: none
-  
 mdns:
   disabled: false  

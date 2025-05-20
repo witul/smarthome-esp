@@ -3,20 +3,12 @@ esphome:
   project:
     name: iot.home
     version: '1.0'
-mdns:
-  disabled: false
-
 esp32:
   board: esp32dev
   framework:
     type: arduino
     version: recommended
     
-improv_serial:
-
-esp32_improv:
-  authorizer: none
-
 # Wspólne komponenty
 <<: !include wifi.yaml
 <<: !include api.yaml
