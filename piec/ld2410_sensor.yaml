@@ -16,13 +16,13 @@ ld2410:
 switch:
   - platform: ld2410  
     engineering_mode:
-      name: "engineering mode"      
+      name: "Tryb experta"      
       restore_mode: RESTORE_DEFAULT_OFF
       web_server:
         sorting_group_id: advanced_group
         
     bluetooth:
-      name: "control bluetooth"
+      name: "Kontrola Bluetooth"
       restore_mode: RESTORE_DEFAULT_OFF
       web_server:
         sorting_group_id: advanced_group
@@ -30,13 +30,13 @@ switch:
 select:
   - platform: ld2410
     distance_resolution:
-      name: "distance resolution"
+      name: "Rodzielczość"
       internal: true
-      id: ld2410_resolution
+      id: ld2410_resolution      
       web_server:
         sorting_group_id: advanced_group
     baud_rate:
-      name: "baud rate"
+      name: "Prędkość tx/rx"
       id: ld2410_baud_rate
       internal: true
       web_server:
@@ -47,7 +47,7 @@ select:
         sorting_group_id: advanced_group
     out_pin_level:
       internal: true
-      name: "out pin level"
+      name: "Poziom sygnału wyjścia"
       web_server:
         sorting_group_id: advanced_group
 
@@ -70,17 +70,24 @@ button:
 sensor:
   - platform: ld2410
     light:
-      name: light
+      name: "Jasność pomieszczeni (LD2410)"
+      id: "ld2410_brightness_sensor"
     moving_distance:
-      name : "Odleglość ruch"
+      name : "Odleglość cel ruch"
+      id: "ld2410_move_distance"
     still_distance:
-      name: "Odległość spocz."
+      name: "Odległość cel spocz."
+      id: "ld2410_still_distance"
     moving_energy:
       name: "Energia ruchu"
+      id: "ld2410_move_energy"
     still_energy:
       name: "Energia spocz."
+      id: ld2410_still_energy
     detection_distance:
       name: "Odległość"
+      id: ld2410_distance
+      
     g0:
       move_energy:
         name: "Strefa g0 en. ruch"
@@ -151,7 +158,7 @@ sensor:
         internal: true
         id: ld2410_g7_move
       still_energy:
-        name: g7 still energy
+        name: "Strefa g7 en. spocz."
         id: ld2410_g7_still
         internal: true
     g8:
@@ -163,12 +170,12 @@ sensor:
         name: "Strefa g8 en. spocz."
         id: ld2410_g8_still
         internal: true
-
+        
 binary_sensor:
   - platform: ld2410
     has_target:
       name: "Obecność"
-      device_class: motion
+      device_class: motion      
     has_moving_target:
       name: "Wykryto ruch"
     has_still_target:
@@ -180,9 +187,12 @@ text_sensor:
   - platform: ld2410
     version:
       name: "Firmware"
+      web_server:
+        sorting_group_id: advanced_group      
     mac_address:
       name: "MAC"
-
+      web_server:
+        sorting_group_id: advanced_group
 
 number:
   - platform: ld2410
@@ -200,66 +210,65 @@ number:
       id: ld2410_max_still_distance_gate
     g0:
       move_threshold:
-        name: "g0 move threshold"
+        name: "g0 próg detekcji ruchu"
         id: ld2410_g0_move_threshold
       still_threshold:        
-        name: g0 still threshold
+        name: g0 próg detekcji spocz.
         id: ld2410_g0_still_threshold        
     g1:
       move_threshold:
-        name: g1 move threshold
+        name: g1 próg detekcji ruchu
         id: ld2410_g1_move_threshold
       still_threshold:
-        name: g1 still threshold
+        name: g1 próg detekcji spocz.
         id: ld2410_g1_still_threshold
-
     g2:
       move_threshold:
-        name: g2 move threshold
+        name: g2 próg detekcji ruchu
         id: ld2410_g2_move_threshold
       still_threshold:
-        name: g2 still threshold
+        name: g2 próg detekcji spocz.
         id: ld2410_g2_still_threshold
 
     g3:
       move_threshold:
-        name: g3 move threshold
+        name: g3 próg detekcji ruchu
         id: ld2410_g3_move_threshold
       still_threshold:
-        name: g3 still threshold
+        name: g3 próg detekcji spocz.
         id: ld2410_g3_still_threshold
     g4:
       move_threshold:
-        name: g4 move threshold
+        name: g4 próg detekcji ruchu
         id: ld2410_g4_move_threshold
       still_threshold:
-        name: g4 still threshold
+        name: g4 próg detekcji spocz.
         id: ld2410_g4_still_threshold
     g5:
       move_threshold:
-        name: g5 move threshold
+        name: g5 próg detekcji ruchu
         id: ld2410_g5_move_threshold
       still_threshold:
-        name: g5 still threshold
+        name: g5 próg detekcji spocz.
         id: ld2410_g5_still_threshold
     g6:
       move_threshold:
-        name: g6 move threshold
+        name: g6 próg detekcji ruchu
         id: ld2410_g6_move_threshold
       still_threshold:
-        name: g6 still threshold
+        name: g6 próg detekcji spocz.
         id: ld2410_g6_still_threshold
     g7:
       move_threshold:
-        name: g7 move threshold
+        name: g7 próg detekcji ruchu
         id: ld2410_g7_move_threshold
       still_threshold:
-        name: g7 still threshold
+        name: g7 próg detekcji spocz.
         id: ld2410_g7_still_threshold
     g8:
       move_threshold:
-        name: g8 move threshold
+        name: g8 próg detekcji ruchu
         id: ld2410_g8_move_threshold
       still_threshold:
-        name: g8 still threshold
+        name: g8 próg detekcji spocz.
         id: ld2410_g8_still_threshold

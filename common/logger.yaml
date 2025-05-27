@@ -4,6 +4,6 @@ logger:
 
 select:
   - platform: logger
-    name: "Logger select"
+    name: "Log"
     web_server:
       sorting_group_id: advanced_group
