@@ -1,0 +1,265 @@
+esphome:
+  on_boot:
+    then:                
+      - select.set:
+          id: ld2410_resolution
+          option: "0.75m"
+      - select.set:
+          id: ld2410_baud_rate
+          option: "256000"
+      
+ld2410:
+  - id: "czujnik_obecnosci_lazienka"
+    uart_id: uart_sensor
+    throttle: 500ms
+      
+switch:
+  - platform: ld2410  
+    engineering_mode:
+      name: "engineering mode"      
+      restore_mode: RESTORE_DEFAULT_OFF
+      web_server:
+        sorting_group_id: advanced_group
+        
+    bluetooth:
+      name: "control bluetooth"
+      restore_mode: RESTORE_DEFAULT_OFF
+      web_server:
+        sorting_group_id: advanced_group
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "distance resolution"
+      internal: true
+      id: ld2410_resolution
+      web_server:
+        sorting_group_id: advanced_group
+    baud_rate:
+      name: "baud rate"
+      id: ld2410_baud_rate
+      internal: true
+      web_server:
+        sorting_group_id: advanced_group      
+    light_function:
+      name: "light function"
+      web_server:
+        sorting_group_id: advanced_group
+    out_pin_level:
+      internal: true
+      name: "out pin level"
+      web_server:
+        sorting_group_id: advanced_group
+
+button:
+  - platform: ld2410
+    factory_reset:
+      name: "Factory reset LD2410"
+      web_server:
+        sorting_group_id: advanced_group
+    restart:
+      name: "Restart LD2410"
+      web_server:
+        sorting_group_id: advanced_group      
+    query_params:
+      name: "Refresh LD2410 data"
+      web_server:
+        sorting_group_id: advanced_group
+
+
+sensor:
+  - platform: ld2410
+    light:
+      name: light
+    moving_distance:
+      name : "Odleglość ruch"
+    still_distance:
+      name: "Odległość spocz."
+    moving_energy:
+      name: "Energia ruchu"
+    still_energy:
+      name: "Energia spocz."
+    detection_distance:
+      name: "Odległość"
+    g0:
+      move_energy:
+        name: "Strefa g0 en. ruch"
+        internal: true        
+        id: ld2410_g0_move
+      still_energy:
+        name: "Strefa g0 en. spocz."
+        internal: true
+        id: ld2410_g0_still
+    g1:
+      move_energy:
+        name: "Strefa g1 en. ruch"
+        internal: true        
+        id: ld2410_g1_move
+      still_energy:
+        name: "Strefa g0 en. spocz."
+        internal: true
+        id: ld2410_g1_still
+    g2:
+      move_energy:
+        name: "Strefa g2 en. ruch"
+        internal: true
+        id: ld2410_g2_move
+      still_energy:
+        name: "Strefa g2 en. spocz."
+        id: ld2410_g2_still
+        internal: true
+    g3:
+      move_energy:
+        name: "Strefa g3 en. ruch"
+        id: ld2410_g3_move
+        internal: true
+      still_energy:
+        name: "Strefa g3 en. spocz."
+        id: ld2410_g3_still
+        internal: true
+    g4:
+      move_energy:
+        name: "Strefa g4 en. ruch"
+        id: ld2410_g4_move
+        internal: true
+      still_energy:
+        name: "Strefa g4 en. spocz."
+        id: ld2410_g4_still
+        internal: true
+    g5:
+      move_energy:
+        name: "Strefa g5 en. ruch"
+        id: ld2410_g5_move
+        internal: true
+      still_energy:
+        name: "Strefa g5 en. spocz."
+        id: ld2410_g5_still
+        internal: true
+
+    g6:
+      move_energy:
+        name: "Strefa g6 en. ruch"
+        id: ld2410_g6_move
+        internal: true
+      still_energy:
+        name: "Strefa g6 en. spocz."
+        id: ld2410_g6_still
+        internal: true
+    g7:
+      move_energy:
+        name: "Strefa g7 en. ruch"
+        internal: true
+        id: ld2410_g7_move
+      still_energy:
+        name: g7 still energy
+        id: ld2410_g7_still
+        internal: true
+    g8:
+      move_energy:
+        name: "Strefa g8 en. ruch"
+        internal: true
+        id: ld2410_g8_move
+      still_energy:
+        name: "Strefa g8 en. spocz."
+        id: ld2410_g8_still
+        internal: true
+
+binary_sensor:
+  - platform: ld2410
+    has_target:
+      name: "Obecność"
+      device_class: motion
+    has_moving_target:
+      name: "Wykryto ruch"
+    has_still_target:
+      name: "Wykryto spocz."
+    out_pin_presence_status:
+      name: "Stan wyjścia"
+
+text_sensor:
+  - platform: ld2410
+    version:
+      name: "Firmware"
+    mac_address:
+      name: "MAC"
+
+
+number:
+  - platform: ld2410
+    timeout:
+      name: timeout
+      id: ld2410_timeout
+    light_threshold:
+      name: "light threshold"
+      id: ld2410_max_light_treshold
+    max_move_distance_gate:
+      name: "max move distance gate"
+      id: ld2410_max_move_distance_gate
+    max_still_distance_gate:
+      name: "max still distance gate"
+      id: ld2410_max_still_distance_gate
+    g0:
+      move_threshold:
+        name: "g0 move threshold"
+        id: ld2410_g0_move_threshold
+      still_threshold:        
+        name: g0 still threshold
+        id: ld2410_g0_still_threshold        
+    g1:
+      move_threshold:
+        name: g1 move threshold
+        id: ld2410_g1_move_threshold
+      still_threshold:
+        name: g1 still threshold
+        id: ld2410_g1_still_threshold
+
+    g2:
+      move_threshold:
+        name: g2 move threshold
+        id: ld2410_g2_move_threshold
+      still_threshold:
+        name: g2 still threshold
+        id: ld2410_g2_still_threshold
+
+    g3:
+      move_threshold:
+        name: g3 move threshold
+        id: ld2410_g3_move_threshold
+      still_threshold:
+        name: g3 still threshold
+        id: ld2410_g3_still_threshold
+    g4:
+      move_threshold:
+        name: g4 move threshold
+        id: ld2410_g4_move_threshold
+      still_threshold:
+        name: g4 still threshold
+        id: ld2410_g4_still_threshold
+    g5:
+      move_threshold:
+        name: g5 move threshold
+        id: ld2410_g5_move_threshold
+      still_threshold:
+        name: g5 still threshold
+        id: ld2410_g5_still_threshold
+    g6:
+      move_threshold:
+        name: g6 move threshold
+        id: ld2410_g6_move_threshold
+      still_threshold:
+        name: g6 still threshold
+        id: ld2410_g6_still_threshold
+    g7:
+      move_threshold:
+        name: g7 move threshold
+        id: ld2410_g7_move_threshold
+      still_threshold:
+        name: g7 still threshold
+        id: ld2410_g7_still_threshold
+    g8:
+      move_threshold:
+        name: g8 move threshold
+        id: ld2410_g8_move_threshold
+      still_threshold:
+        name: g8 still threshold
+        id: ld2410_g8_still_threshold

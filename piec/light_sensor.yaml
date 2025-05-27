@@ -1,0 +1,7 @@
+sensor:
+  - platform: adc
+    pin: GPIO33
+    name: "Jasność pomieszczenia"
+    update_interval: 10s
+    attenuation: auto  
+    id: piec_jasnosc

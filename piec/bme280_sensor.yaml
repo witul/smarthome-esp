@@ -1,0 +1,61 @@
+sensor:
+  - platform: bme280_i2c
+    address: 0x76
+    iir_filter: 16x
+    update_interval: 60s
+    temperature:
+      id: piec_temperatura
+      name: "Temperatura pomieszczenia"
+      oversampling: 16x
+      web_server:
+        sorting_group_id: bme280_sensor            
+      on_value:
+        then:
+          - component.update: piec_cisnienie_abs
+    
+    humidity:
+      oversampling: 16x      
+      name: "Wilgotność pomieszczenia"
+      id: piec_wilgotnosc
+      web_server:
+        sorting_group_id: bme280_sensor
+
+    pressure:
+      oversampling: 16x
+      name: "Ciśnienie lokalne"
+      id: piec_cisnienie
+      internal: true
+      web_server:
+        sorting_group_id: bme280_sensor                  
+      on_value:
+        then:
+          - component.update: piec_cisnienie_abs
+
+  - platform: template
+    name: "Ciśnienie"
+    id: piec_cisnienie_abs
+    lambda: |-
+      float altitude = id(standard_altitude).state;
+      return id(piec_cisnienie).state / powf(1 - ((0.0065 * altitude) /
+        (id(piec_temperatura).state + (0.0065 * altitude) + 273.15)), 5.257);
+    update_interval: never
+    unit_of_measurement: 'hPa'   
+    web_server:
+      sorting_group_id: bme280_sensor
+
+number:
+  - platform: template
+    name: "Wysokość n.p.m."
+    id: standard_altitude
+    optimistic: true
+    initial_value: 263.0
+    min_value: -100.0
+    max_value: 1000.0
+    step: 1.0
+    unit_of_measurement: "m"
+    mode: box
+    restore_value: true
+    entity_category: config
+    internal: true
+    web_server:
+      sorting_group_id: advanced_group

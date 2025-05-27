@@ -1,0 +1,12 @@
+switch:
+  - platform: gpio
+    id: wlacznik_pieca
+    pin:
+      number: GPIO5
+      inverted: true
+      mode: 
+        output: true
+    restore_mode: RESTORE_DEFAULT_ON
+    name: "Sterownik pieca"
+    web_server:
+      sorting_group_id: heating_group

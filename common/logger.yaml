@@ -1,2 +1,9 @@
 logger:
-  level: DEBUG
+  level: INFO
+  baud_rate: 0
+
+select:
+  - platform: logger
+    name: "Logger select"
+    web_server:
+      sorting_group_id: advanced_group

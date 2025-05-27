@@ -1,7 +1,5 @@
 esp32:
   board: esp32dev
-    framework:
-      type: esp-idf
-      version: recommended 
-
-
+  framework:
+    type: arduino
+    version: recommended

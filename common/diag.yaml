@@ -1,0 +1,13 @@
+button:
+  - platform: restart
+    name: "Restart ESP"
+    id: restart_esp
+    web_server:
+      sorting_group_id: advanced_group
+
+light:
+  - platform: status_led
+    name: "Status LED"
+    pin: GPIO2
+    web_server:
+      sorting_group_id: advanced_group
