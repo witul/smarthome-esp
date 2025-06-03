@@ -1,3 +1,8 @@
+debug:
+  update_interval: 5s
+
+psram:    
+
 button:
   - platform: restart
     name: "Restart ESP"
@@ -11,3 +16,66 @@ light:
     pin: GPIO2
     web_server:
       sorting_group_id: advanced_group
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "Device Info"
+      web_server:
+        sorting_group_id: device_info_group
+    reset_reason:
+      name: "Reset Reason"
+      web_server:
+        sorting_group_id: device_info_group
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: version
+    name: "ESPHome version"
+
+  - platform: template
+    name: "Project Version"
+    id: esphome_project_version_text_short
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION };
+
+  - platform: template
+    name: "Project Version Detailed"
+    id: esphome_project_version_text_detailed
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };
+
+  - platform: template
+    name: "Project Name"
+    id: esphome_project_name
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_NAME };
+
+
+sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+      web_server:
+        sorting_group_id: device_info_group
+    psram:
+      name: "Free PSRAM"
+      web_server:
+        sorting_group_id: device_info_group
+
+binary_sensor:
+  - platform: status
+    name: "Status"     
+    web_server:
+      sorting_group_id: device_info_group
+

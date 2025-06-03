@@ -1,8 +1,7 @@
 packages:
-  project: !include common/project.yaml
-  wifi: !include common/wifi.yaml
-  api: !include common/api.yaml
   diag: !include common/diag.yaml
+  api: !include common/api.yaml
+  wifi: !include common/wifi.yaml
   logger: !include common/logger.yaml
   webserver: !include common/webserver.yaml
   board: !include common/board-arduino.yaml
@@ -17,6 +16,10 @@ esphome:
   name: piec
   friendly_name: Piec / Cz. ruchu
   comment: "Moduł pieca / czujnik ruchu"
+  name_add_mac_suffix: false
+  project:
+    name: piec.iot
+    version: '1.0'
 
 wifi:
   manual_ip:
@@ -45,7 +48,11 @@ web_server:
     - id: advanced_group
       name: "Zaawansowane"
       sorting_weight: 10
+
+    - id: device_info_group
+      name: "Info"
+      sorting_weight: 11
+
     - id: bme280_sensor
       name: "BME280"
       sorting_weight: 8
-

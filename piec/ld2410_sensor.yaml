@@ -11,7 +11,6 @@ esphome:
 ld2410:
   - id: "czujnik_obecnosci_lazienka"
     uart_id: uart_sensor
-    throttle: 500ms
       
 switch:
   - platform: ld2410  

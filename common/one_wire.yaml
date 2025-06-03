@@ -1,0 +1,14 @@
+one_wire:
+  - platform: gpio
+    pin: GPIO14
+    id: one_wire_1
+
+button:
+  - platform: template
+    name: "Test 1-wire bus"
+    internal: true
+    on_press: 
+      then:
+        - lambda: |-
+            id(one_wire_1).search();
+            id(one_wire_1).dump_config();

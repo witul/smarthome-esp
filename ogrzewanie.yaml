@@ -6,8 +6,6 @@ esphome:
     name: iot.home
     version: '1.0'
 
-  #area:
-
 esp32:
   board: esp32dev
   framework:
@@ -22,18 +20,12 @@ wifi:
   password: !secret wifi_password
   domain: ".iot.home.arpa"
   
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: "Ogrzewanie MCU AP"
     password: "kukuryku"
 
-# In combination with the `ap` this allows the user
-# to provision wifi credentials to the device via WiFi AP.
 captive_portal:
 
-
-# Sets up Bluetooth LE (Only on ESP32) to allow the user
-# to provision wifi credentials to the device.
 esp32_improv:
   authorizer: none
 
@@ -43,13 +35,10 @@ one_wire:
   - platform: gpio
     pin: GPIO14
     id: one_wire_1      
-    
 
-# Enable logging
 logger:
   baud_rate: 0
 
-# Enable Home Assistant API
 api:
   password: ""
 
@@ -77,8 +66,19 @@ binary_sensor:
     name: "Grzałka - Stan"
     lambda: |-
       return (id(grzalka_moc).state > 5.0);
-    id: grzalka_status    
+    id: grzalka_status
 
+
+
+button:
+  - platform: template
+    name: "Test 1-wire bus"
+    internal: true
+    on_press: 
+      then:
+        - lambda: |-
+            id(one_wire_1).search();
+            id(one_wire_1).dump_config();
 sensor:
   - platform: uptime
     name: "Uptime"
@@ -164,6 +164,18 @@ sensor:
     device_class: "temperature"
     state_class: "measurement"
     accuracy_decimals: 1
+
+  - platform: dallas_temp
+    id: temp_7
+    address: "0x270000003a0c8828"
+    one_wire_id: one_wire_1
+    name: "Temp grz. Łazienka"
+    unit_of_measurement: "°C"
+    icon: "mdi:water-percent"
+    device_class: "temperature"
+    state_class: "measurement"
+    accuracy_decimals: 1
+    
 
   - platform: pzemac
     current:
@@ -256,7 +268,6 @@ switch:
       inverted: true
     restore_mode: RESTORE_DEFAULT_OFF
     
-
   - platform: gpio
     name: "Grzałka przekaznik"
     id: grzalka_przekaznik
@@ -270,3 +281,5 @@ switch:
 select:
   - platform: logger
     name: "Logger select"
+
+    

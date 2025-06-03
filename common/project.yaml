@@ -1,5 +1,5 @@
 esphome:
   name_add_mac_suffix: false
   project:
-    name: iot.home
-    version: '1.0'
+    name: $project_name
+    version: $app_version

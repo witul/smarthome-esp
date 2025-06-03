@@ -3,7 +3,30 @@ sensor:
     pin: GPIO33
     name: "Jasność pomieszczenia"  
     id: piec_jasnosc   
-    accuracy_decimals: 0
-    update_interval: 60s
+    accuracy_decimals: 2
+    update_interval: 30s
     attenuation: 12dB
     samples: 10
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+binary_sensor:
+  - platform: template
+    name: "Tryb nocny (ciemno)"
+    id: tryb_nocny
+    lambda: |-
+      return id(piec_jasnosc).state < id(prog_jasnosci_noc).state;
+    device_class: light
+
+number:
+  - platform: template
+    name: "Próg jasności (noc)"
+    id: prog_jasnosci_noc
+    optimistic: true
+    min_value: 0.0
+    max_value: 3.3
+    step: 0.01
+    initial_value: 0.6
+    mode: slider
