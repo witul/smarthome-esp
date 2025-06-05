@@ -16,13 +16,13 @@ switch:
   - platform: ld2410  
     engineering_mode:
       name: "Tryb experta"      
-      restore_mode: RESTORE_DEFAULT_OFF
+      restore_mode: RESTORE_DEFAULT_ON
       web_server:
         sorting_group_id: advanced_group
         
     bluetooth:
       name: "Kontrola Bluetooth"
-      restore_mode: RESTORE_DEFAULT_OFF
+      restore_mode: RESTORE_DEFAULT_ON
       web_server:
         sorting_group_id: advanced_group
 
@@ -190,10 +190,11 @@ text_sensor:
         sorting_group_id: advanced_group
         
 number:
-  - platform: ld2410
+  - platform: ld2410    
     timeout:
       name: timeout
       id: ld2410_timeout
+      mode: box
     light_threshold:
       name: "Próg nat. światła (LD2410)"
       id: ld2410_max_light_treshold

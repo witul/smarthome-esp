@@ -1,20 +1,28 @@
 packages:
-  common: !include common/base.yaml
+  diag: !include common/diag.yaml
+  api: !include common/api.yaml
+  wifi: !include common/wifi.yaml
+  logger: !include common/logger.yaml
+  webserver: !include common/webserver.yaml
+  board: !include common/board-arduino.yaml
   ota: !include common/ota.yaml
-  
+
 esphome:  
   name: lazienka-led
   comment: "Sterowanie oświetleniem LED"
-  friendly_name: Oświetlenie lustra
-  area: bathroom
-
+  friendly_name: "Oświetlenie lustra"
+  area: bathroom  
+  name_add_mac_suffix: false
+  project:
+    name: lazienka-led.iot
+    version: '1.0'
+    
 globals:
   - id: current_values
     type: float
     restore_value: yes
     initial_value: '0.1'
     
-
 wifi:
   manual_ip:
       static_ip: 10.1.30.4
@@ -72,8 +80,8 @@ light:
           name: "Fast Pulse"
           transition_length: 0.4s
           update_interval: 1.5s
-          min_brightness: 30%
-          max_brightness: 100%      
+          min_brightness: "30%"
+          max_brightness: "100%"
       - random:
           name: "Random Effect"
           transition_length: 3s
@@ -89,6 +97,20 @@ light:
             off_length: 500ms
           update_interval: 1.5s
 
-  - platform: status_led
-    name: "Status LED"
-    pin: GPIO2
+web_server:
+  sorting_groups:
+    - id: heating_group
+      name: "Ogrzewanie"
+      sorting_weight: 4
+      
+    - id: advanced_group
+      name: "Zaawansowane"
+      sorting_weight: 10
+
+    - id: device_info_group
+      name: "Info"
+      sorting_weight: 11
+
+    - id: bme280_sensor
+      name: "BME280"
+      sorting_weight: 8

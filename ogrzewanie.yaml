@@ -24,23 +24,21 @@ wifi:
     ssid: "Ogrzewanie MCU AP"
     password: "kukuryku"
 
-captive_portal:
-
-esp32_improv:
-  authorizer: none
-
 modbus:
 
 one_wire:
   - platform: gpio
     pin: GPIO14
     id: one_wire_1      
-
+  - platform: gpio
+    pin: GPIO27
+    id: one_wire_2
+    
 logger:
   baud_rate: 0
 
 api:
-  password: ""
+  password: ""  
 
 ota:
   platform: esphome
@@ -68,8 +66,6 @@ binary_sensor:
       return (id(grzalka_moc).state > 5.0);
     id: grzalka_status
 
-
-
 button:
   - platform: template
     name: "Test 1-wire bus"
@@ -79,6 +75,7 @@ button:
         - lambda: |-
             id(one_wire_1).search();
             id(one_wire_1).dump_config();
+
 sensor:
   - platform: uptime
     name: "Uptime"
@@ -168,7 +165,7 @@ sensor:
   - platform: dallas_temp
     id: temp_7
     address: "0x270000003a0c8828"
-    one_wire_id: one_wire_1
+    one_wire_id: one_wire_2
     name: "Temp grz. Łazienka"
     unit_of_measurement: "°C"
     icon: "mdi:water-percent"
@@ -176,6 +173,7 @@ sensor:
     state_class: "measurement"
     accuracy_decimals: 1
     
+
 
   - platform: pzemac
     current:
@@ -280,6 +278,5 @@ switch:
       
 select:
   - platform: logger
-    name: "Logger select"
-
+    name: "Logger select"    
     
