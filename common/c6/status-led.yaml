@@ -1,0 +1,9 @@
+light:
+  - platform: esp32_rmt_led_strip
+    name: Status LED
+    pin: GPIO8
+    rgb_order: GRB
+    num_leds: 1
+    chipset: ws2812
+    web_server:
+      sorting_group_id: advanced_group

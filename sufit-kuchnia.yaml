@@ -1,0 +1,128 @@
+packages:
+  api: !include common/api.yaml
+  logger: !include common/logger.yaml
+  light: !include common/c6/status-led.yaml
+
+
+esphome:  
+  name: kuchnia-sufit
+  friendly_name: Sufit kuchnia
+  min_version: 2025.5.0
+  comment: "Oświetlenie, wentylacja, sensory w kuchni"
+  name_add_mac_suffix: false
+  project:
+    name: kuchnia-sufit.iot
+    version: '1.0'
+
+esp32:
+  board: esp32-c6-devkitm-1
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: !secret network_domain
+  reboot_timeout: 60min
+  fast_connect: true  
+  ap:
+    ssid: "Kuchnia sufit MCU"    
+    password: !secret ap_password
+  manual_ip:
+    gateway: 10.1.30.1
+    subnet: 255.255.255.0
+    static_ip: 10.1.30.26
+    
+captive_portal:
+
+mdns:
+  disabled: false  
+
+#i2c:
+#  sda: GPIO23
+#  scl: GPIO22
+#  scan: false
+
+debug:
+  update_interval: 5s
+
+web_server:
+  port: 8080
+  include_internal: true
+  log: true
+  version: 3  
+  sorting_groups:
+    - id: advanced_group
+      name: "Zaawansowane"
+      sorting_weight: 10
+
+    - id: device_info_group
+      name: "Info"
+      sorting_weight: 11
+
+button:
+  - platform: restart
+    name: "Restart ESP"
+    id: restart_esp
+    web_server:
+      sorting_group_id: advanced_group
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "Device Info"
+      web_server:
+        sorting_group_id: device_info_group
+    reset_reason:
+      name: "Reset Reason"
+      web_server:
+        sorting_group_id: device_info_group
+
+  - platform: uptime
+    name: Uptime
+
+  - platform: version
+    name: "ESPHome version"
+
+  - platform: template
+    name: "Project Version"
+    id: esphome_project_version_text_short
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION };
+
+  - platform: template
+    name: "Project Version Detailed"
+    id: esphome_project_version_text_detailed
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };
+
+  - platform: template
+    name: "Project Name"
+    id: esphome_project_name
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    lambda: |-
+      return { ESPHOME_PROJECT_NAME };
+
+binary_sensor:
+  - platform: status
+    name: "Status"     
+    web_server:
+      sorting_group_id: device_info_group
