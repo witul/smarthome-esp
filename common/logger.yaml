@@ -7,3 +7,6 @@ select:
     name: "Log"
     web_server:
       sorting_group_id: advanced_group
+
+debug:
+  update_interval: 5s

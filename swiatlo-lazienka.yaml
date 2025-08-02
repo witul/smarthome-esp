@@ -1,65 +1,50 @@
+substitutions:
+  reboot_timeout: 60min
+  static_ip: 10.1.30.24
+  device_name: lazienka-oswietlenie
+  friendly_name: Oświetlenie Łazienki
+  area: ""
+  comment: "Oświetlenie LED / Lampa w łazience | IP ${static_ip}"
+  icon: "mdi:light"
+  project_name: "oswietlenie-lazienka.iot"
+  project_version: "1.0"  
+  ap_ssid: "Oswietlenie MCU"
+
 packages:
-  api: !include common/api.yaml
   logger: !include common/logger.yaml
   light: !include common/c6/status-led.yaml
+  wifi: !include common/wifi.yaml
+  ota: !include common/ota.yaml
 
-esphome:  
-  name: lazienka-oswietlenie
-  friendly_name: Oświetlenie Łazienki
+api:
+  password: !secret homeassistant_api_key
+
+esphome:
   min_version: 2025.5.0
-  comment: "Oświetlenie LED / Lampa w łazience"
   name_add_mac_suffix: false
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
+  area: ${area}
   project:
-    name: oswietlenie-lazienka.iot
-    version: '1.0'
+    name: ${project_name}
+    version: ${project_version}    
 
 esp32:
   board: esp32-c6-devkitm-1
   framework:
     type: esp-idf
 
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-
-# Allow Over-The-Air updates
-ota:
-- platform: esphome
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  domain: !secret network_domain
-  reboot_timeout: 60min
-  fast_connect: true  
-  ap:
-    ssid: "Oswietlenie MCU"    
-    password: !secret ap_password
-  manual_ip:
-    gateway: 10.1.30.1
-    subnet: 255.255.255.0
-    static_ip: 10.1.30.24
-    
-captive_portal:
-
-mdns:
-  disabled: false  
-
 #i2c:
 #  sda: GPIO23
 #  scl: GPIO22
 #  scan: false
 
-debug:
-  update_interval: 5s
-
 web_server:
   port: 8080
   include_internal: true
   log: true
-  version: 3  
+  version: 3
   sorting_groups:
     - id: advanced_group
       name: "Zaawansowane"
@@ -125,3 +110,38 @@ binary_sensor:
     name: "Status"     
     web_server:
       sorting_group_id: device_info_group
+  - platform: gpio
+    pin:
+      number: GPIO21
+      mode:
+        input: true
+        pullup: true
+    name: "SW-1"
+    id: "input_sw_1"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+
+  - platform: gpio
+    pin:
+      number: GPIO22
+      mode:
+        input: true
+        pullup: true
+    name: "SW-2"
+    id: "input_sw_2"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+
+  - platform: gpio
+    pin:
+      number: GPIO23
+      mode:
+        input: true
+        pullup: true
+    name: "SW-3"
+    id: "input_sw_3"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
