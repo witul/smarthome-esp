@@ -87,9 +87,6 @@ button:
     web_server:
       sorting_group_id: advanced_group
 
-  - platform: restart
-    name: "Restart"    
-
   - platform: template
     id: btn_minus
     name: "Minus"
@@ -162,15 +159,17 @@ binary_sensor:
     web_server:
       sorting_group_id: device_info_group
 
-  - platform: gpio
+  - platform: gpio  
+    name: "SW-1"
+    id: "input_sw_1"
+    
     pin:
       number: GPIO0
       inverted: true
       mode:
         input: true
         pullup: true
-    name: "SW-1"
-    id: "input_sw_1"
+
     on_click:
       - min_length: 50ms
         max_length: 750ms
@@ -190,7 +189,7 @@ binary_sensor:
                   brightness_limits:
                       min_brightness: 0%
                       max_brightness: 100%
-              - delay: 0.05s              
+              - delay: 0.05s
     on_press:      
       - while:
           condition:
@@ -198,7 +197,7 @@ binary_sensor:
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: 2%
+                relative_brightness: 1%
                 transition_length: 0.02s
                 brightness_limits:
                     min_brightness: 0%
@@ -206,14 +205,15 @@ binary_sensor:
             - delay: 0.05s
 
   - platform: gpio
+    name: "SW-2"
+    id: "input_sw_2"
+      
     pin:
       number: GPIO1
       inverted: true
       mode:      
         input: true
         pullup: true
-    name: "SW-2"
-    id: "input_sw_2"
     on_click:
       - min_length: 50ms
         max_length: 750ms
@@ -222,7 +222,7 @@ binary_sensor:
               condition:
                 light.is_on: light_0
               then:
-                - light.turn_off: light_0                
+                - light.turn_off: light_0
     on_press:      
       - while:
           condition:
@@ -230,12 +230,13 @@ binary_sensor:
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: -2%
+                relative_brightness: -1%
                 transition_length: 0.02s
                 brightness_limits:
                     min_brightness: 0%
                     max_brightness: 100%
-            - delay: 0.05s          
+            - delay: 0.05s
+
 output:
   - platform: ledc
     pin: GPIO4
@@ -265,21 +266,21 @@ light:
     restore_mode: RESTORE_DEFAULT_OFF
     effects:
       - pulse:
-          name: "Fast Pulse"
+          name: "Szybki impuls"
           transition_length: 0.4s
           update_interval: 1.5s
           min_brightness: "30%"
           max_brightness: "100%"
       - random:
-          name: "Random Effect"
+          name: "Losowy efekt"
           transition_length: 3s
           update_interval: 5s
       - pulse:
-          name: "Slow Pulse"
+          name: "Wolny impuls"
           transition_length: 500ms
           update_interval: 2s
       - pulse:
-          name: "Asymmetrical Pulse"
+          name: "Asymetryczny impuls"
           transition_length:
             on_length: 1s
             off_length: 500ms
