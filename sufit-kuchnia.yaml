@@ -1,43 +1,45 @@
-packages:
-  api: !include common/api.yaml
-  logger: !include common/logger.yaml
-  light: !include common/c6/status-led.yaml
-
 substitutions:
+  reboot_timeout: 60min
+  static_ip: 10.1.30.26
+  device_name: kuchnia-sufit
+  friendly_name: Sufit kuchnia
+  area: ""
+  comment: "Oświetlenie, wentylacja, sensory w kuchni | IP ${static_ip}"
+  icon: "mdi:light"
+  project_name: "kuchnia-sufit.iot"
+  project_version: "1.0"
+  ap_ssid: "Kuchnia sufit MCU"
   step: "5"
   interval_ms: "100"
 
-globals:
+packages:
+  api: !include common/api.yaml  
+  logger: !include common/logger.yaml
+  light: !include common/c6/status-led.yaml
+  wifi: !include common/wifi.yaml
+  ota: !include common/ota.yaml
 
+globals:
   - id: brightness
     type: int
     restore_value: no
-    initial_value: '100'
-    
-esphome:  
-  name: kuchnia-sufit
-  friendly_name: Sufit kuchnia
-  min_version: 2025.5.0
-  comment: "Oświetlenie, wentylacja, sensory w kuchni"
-  name_add_mac_suffix: false
-  project:
-    name: kuchnia-sufit.iot
-    version: '1.0'
+    initial_value: '60'
 
 esp32:
   board: esp32-c6-devkitm-1
   framework:
     type: esp-idf
 
-# Enable logging
-logger:
-
-# Enable Home Assistant API
-api:
-
-# Allow Over-The-Air updates
-ota:
-- platform: esphome
+esphome:
+  min_version: 2025.5.0
+  name_add_mac_suffix: false
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
+  area: ${area}
+  project:
+    name: ${project_name}
+    version: ${project_version}
 
 wifi:
   ssid: !secret wifi_ssid
@@ -56,15 +58,7 @@ wifi:
 captive_portal:
 
 mdns:
-  disabled: false  
-
-#i2c:
-#  sda: GPIO23
-#  scl: GPIO22
-#  scan: false
-
-debug:
-  update_interval: 5s
+  disabled: false
 
 web_server:
   port: 8080
@@ -159,17 +153,15 @@ binary_sensor:
     web_server:
       sorting_group_id: device_info_group
 
-  - platform: gpio  
-    name: "SW-1"
-    id: "input_sw_1"
-    
+  - platform: gpio
     pin:
       number: GPIO0
       inverted: true
       mode:
         input: true
         pullup: true
-
+    name: "SW-1"
+    id: "input_sw_1"
     on_click:
       - min_length: 50ms
         max_length: 750ms
@@ -189,7 +181,7 @@ binary_sensor:
                   brightness_limits:
                       min_brightness: 0%
                       max_brightness: 100%
-              - delay: 0.05s
+              - delay: 0.05s              
     on_press:      
       - while:
           condition:
@@ -197,7 +189,7 @@ binary_sensor:
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: 1%
+                relative_brightness: 2%
                 transition_length: 0.02s
                 brightness_limits:
                     min_brightness: 0%
@@ -205,15 +197,14 @@ binary_sensor:
             - delay: 0.05s
 
   - platform: gpio
-    name: "SW-2"
-    id: "input_sw_2"
-      
     pin:
       number: GPIO1
       inverted: true
       mode:      
         input: true
         pullup: true
+    name: "SW-2"
+    id: "input_sw_2"
     on_click:
       - min_length: 50ms
         max_length: 750ms
@@ -222,7 +213,7 @@ binary_sensor:
               condition:
                 light.is_on: light_0
               then:
-                - light.turn_off: light_0
+                - light.turn_off: light_0                
     on_press:      
       - while:
           condition:
@@ -230,12 +221,12 @@ binary_sensor:
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: -1%
+                relative_brightness: -2%
                 transition_length: 0.02s
                 brightness_limits:
                     min_brightness: 0%
                     max_brightness: 100%
-            - delay: 0.05s
+            - delay: 0.05s          
 
 output:
   - platform: ledc
@@ -243,6 +234,7 @@ output:
     id: output_led
     frequency: 200Hz
     zero_means_zero: true
+
 number:
   - platform: template
     name: pwm_change
@@ -264,24 +256,3 @@ light:
     name: "Kuchnia LED"
     output: output_led
     restore_mode: RESTORE_DEFAULT_OFF
-    effects:
-      - pulse:
-          name: "Szybki impuls"
-          transition_length: 0.4s
-          update_interval: 1.5s
-          min_brightness: "30%"
-          max_brightness: "100%"
-      - random:
-          name: "Losowy efekt"
-          transition_length: 3s
-          update_interval: 5s
-      - pulse:
-          name: "Wolny impuls"
-          transition_length: 500ms
-          update_interval: 2s
-      - pulse:
-          name: "Asymetryczny impuls"
-          transition_length:
-            on_length: 1s
-            off_length: 500ms
-          update_interval: 1.5s
