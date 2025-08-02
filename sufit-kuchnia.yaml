@@ -171,18 +171,39 @@ binary_sensor:
         pullup: true
     name: "SW-1"
     id: "input_sw_1"
-    on_press:
+    on_click:
+      - min_length: 50ms
+        max_length: 750ms
+        then: 
+        - if:
+            condition:
+              light.is_off: light_0
+            then:
+              - light.turn_on:
+                  id: light_0
+                  brightness: 50%
+            else:            
+              - light.dim_relative:
+                  id: light_0
+                  relative_brightness: 2%
+                  transition_length: 0.02s
+                  brightness_limits:
+                      min_brightness: 0%
+                      max_brightness: 100%
+              - delay: 0.05s              
+    on_press:      
       - while:
           condition:
             binary_sensor.is_on: input_sw_1
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: 5%
-                transition_length: 0.1s
+                relative_brightness: 2%
+                transition_length: 0.02s
                 brightness_limits:
-                    max_brightness: 90%
-            - delay: 0.1s    
+                    min_brightness: 0%
+                    max_brightness: 100%
+            - delay: 0.05s
 
   - platform: gpio
     pin:
@@ -193,35 +214,43 @@ binary_sensor:
         pullup: true
     name: "SW-2"
     id: "input_sw_2"
-    on_press:
+    on_click:
+      - min_length: 50ms
+        max_length: 750ms
+        then:
+          - if:
+              condition:
+                light.is_on: light_0
+              then:
+                - light.turn_off: light_0                
+    on_press:      
       - while:
           condition:
             binary_sensor.is_on: input_sw_2
           then:
             - light.dim_relative:
                 id: light_0
-                relative_brightness: -5%
-                transition_length: 0.1s
+                relative_brightness: -2%
+                transition_length: 0.02s
                 brightness_limits:
                     min_brightness: 0%
-            - delay: 0.1s          
+                    max_brightness: 100%
+            - delay: 0.05s          
 output:
   - platform: ledc
     pin: GPIO4
     id: output_led
     frequency: 200Hz
     zero_means_zero: true
-    min_power: 0.01
-    max_power: 0.99             
 number:
   - platform: template
     name: pwm_change
     optimistic: true
-    initial_value: 100
-    min_value: 100
-    max_value: 1000
+    initial_value: 200
+    min_value: 50
+    max_value: 2000
     step: 100
-    #mode: slider
+    mode: box
     on_value:
       - output.ledc.set_frequency:
           id: output_led
