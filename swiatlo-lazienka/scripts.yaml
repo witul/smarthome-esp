@@ -1,0 +1,25 @@
+script:
+  - id: dim_up
+    mode: restart
+    then:
+      - while:
+          condition:
+            lambda: 'return id(light_1).current_values.get_brightness() < 1.0;'
+          then:
+            - light.dim_relative:
+                id: light_1
+                relative_brightness: 0.05
+                transition_length: 0.2s
+            - delay: 0.2s
+  - id: dim_down
+    mode: restart
+    then:
+      - while:
+          condition:
+            lambda: 'return id(light_1).current_values.get_brightness() > 0.0;'
+          then:
+            - light.dim_relative:
+                id: light_1
+                relative_brightness: -0.05
+                transition_length: 0.2s
+            - delay: 0.2s    

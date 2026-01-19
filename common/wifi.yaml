@@ -9,10 +9,31 @@ wifi:
     password: !secret ap_password
   manual_ip:
       gateway: 10.1.30.1
-      subnet: 255.255.255.0      
-      static_ip: ${static_ip}            
+      subnet: 255.255.255.0
+      static_ip: ${static_ip}
 
 captive_portal:
 
-mdns:
-  disabled: false
+mdns: 
+  disabled: true
+
+sensor:
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 30s
+    entity_category: "diagnostic"
+    web_server:
+      sorting_group_id: device_info_group
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
+    web_server:
+      sorting_group_id: device_info_group
+    

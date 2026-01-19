@@ -3,8 +3,8 @@ substitutions:
   static_ip: 10.1.30.24
   device_name: lazienka-oswietlenie
   friendly_name: Oświetlenie Łazienki
-  area: ""
-  comment: "Oświetlenie LED / Lampa w łazience | IP ${static_ip}"
+  area: "Łazienka"
+  comment: "Oświetlenie w łazience | IP ${static_ip}"
   icon: "mdi:light"
   project_name: "oswietlenie-lazienka.iot"
   project_version: "1.0"  
@@ -15,9 +15,33 @@ packages:
   light: !include common/c6/status-led.yaml
   wifi: !include common/wifi.yaml
   ota: !include common/ota.yaml
+  #scripts: !include swiatlo-lazienka/scripts.yaml  
+  #sw1: !include swiatlo-lazienka/switch-1.yaml
+  #sw2: !include swiatlo-lazienka/switch-2.yaml
 
 api:
   password: !secret homeassistant_api_key
+
+globals:
+  - id: dim_direction
+    type: bool
+    restore_value: no
+    initial_value: 'false'  # false = rozjaśnianie, true = ściemnianie
+  - id: light_status
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+  - id: sw_1_click_counter
+    type: int
+    restore_value: yes
+    initial_value: '1'
+
+  - id: sw_2_click_counter
+    type: int
+    restore_value: yes
+    initial_value: '1'
+
 
 esphome:
   min_version: 2025.5.0
@@ -34,11 +58,6 @@ esp32:
   board: esp32-c6-devkitm-1
   framework:
     type: esp-idf
-
-#i2c:
-#  sda: GPIO23
-#  scl: GPIO22
-#  scan: false
 
 web_server:
   port: 8080
@@ -105,6 +124,18 @@ text_sensor:
     lambda: |-
       return { ESPHOME_PROJECT_NAME };
 
+  - platform: template
+    name: "SW-1 Counter"
+    id: sw1_counter
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+
+  - platform: template
+    name: "SW-2 Counter"
+    id: sw2_counter        
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+
 binary_sensor:
   - platform: status
     name: "Status"     
@@ -112,36 +143,177 @@ binary_sensor:
       sorting_group_id: device_info_group
   - platform: gpio
     pin:
-      number: GPIO21
-      mode:
-        input: true
-        pullup: true
-    name: "SW-1"
-    id: "input_sw_1"
-    filters:
-      - delayed_on: 10ms
-      - delayed_off: 10ms
-
-  - platform: gpio
-    pin:
       number: GPIO22
       mode:
         input: true
         pullup: true
-    name: "SW-2"
-    id: "input_sw_2"
+      inverted: true
+
+    name: "SW-1"    
+    id: "input_sw_1"
     filters:
-      - delayed_on: 10ms
-      - delayed_off: 10ms
+      - delayed_on: 5ms
+      - delayed_off: 5ms
+    on_multi_click:
+      - timing:          
+          - ON for at least 0.2s
+        then: 
+          - lambda:
+              id(sw_1_click_counter) += 1;
+              if (id(sw_1_click_counter) > 3) {
+                id(sw_1_click_counter) = 1;
+              }
+              id(sw1_counter).publish_state(std::to_string(id(sw_1_click_counter)).c_str());    
+              id(light_1).turn_on();              
+              id(light_2).turn_on();
+      - timing:          
+          - ON for at least 2.0s
+        then: 
+          - lambda:
+              id(sw_1_click_counter) += 1;
+              if (id(sw_1_click_counter) > 3) {
+                id(sw_1_click_counter) = 1;
+              }
+              id(sw1_counter).publish_state(std::to_string(id(sw_1_click_counter)).c_str());    
+              id(light_1).turn_off();              
+              id(light_2).turn_on();
+      - timing:          
+          - ON for at least 3.0s
+        then: 
+          - lambda:
+              id(sw_1_click_counter) += 1;
+              if (id(sw_1_click_counter) > 3) {
+                id(sw_1_click_counter) = 1;
+              }
+              id(sw1_counter).publish_state(std::to_string(id(sw_1_click_counter)).c_str());
+              if (id(sw_1_click_counter) = 1) {
+                id(sw_1_click_counter) = 1;
+              }
+              id(light_1).turn_on();              
+              id(light_2).turn_off();
+
 
   - platform: gpio
     pin:
-      number: GPIO23
+      number: GPIO21
       mode:
         input: true
         pullup: true
-    name: "SW-3"
-    id: "input_sw_3"
+      inverted: true
+    name: "SW-2"
+    id: "input_sw_2"
     filters:
-      - delayed_on: 10ms
-      - delayed_off: 10ms
+      - delayed_on: 3ms
+      - delayed_off: 3ms
+    
+    on_multi_click:
+      # 1 klik
+      - timing:
+          - ON for at most 0.8s
+          - OFF for at least 0.2s
+        then: 
+          - lambda:
+              id(sw_2_click_counter) += 1;
+              if (id(sw_2_click_counter) > 3) {
+                id(sw_2_click_counter) = 1;
+              }
+              id(sw2_counter).publish_state(std::to_string(id(sw_2_click_counter)).c_str());
+            
+      - timing:
+          - ON for at least 1s
+        then:
+        - logger.log: "LONG click"
+        - while:
+            condition:
+              binary_sensor.is_on: input_sw_2
+            then:
+              - light.dim_relative:
+                  id: light_1
+                  relative_brightness: 5%
+                  transition_length: 0.1s
+                  brightness_limits:
+                      max_brightness: 90%
+              - light.dim_relative:
+                  id: light_2
+                  relative_brightness: 5%
+                  transition_length: 0.1s
+                  brightness_limits:
+                      max_brightness: 90%                      
+              - delay: 0.1s
+
+
+
+      
+#    on_press:
+#      - if:
+#          condition:
+#            lambda: 'return id(dim_direction);'
+#          then:
+#            - script.execute: dim_down
+#          else:
+#            - script.execute: dim_up
+#      - lambda: 'id(dim_direction) = !id(dim_direction);'  # zmiana kierunku po każdym naciśnięciu
+
+
+output:
+  - platform: ledc
+    pin: GPIO4
+    inverted: false    
+    id: output_lamp_1
+    frequency: 200Hz
+    zero_means_zero: true
+
+  - platform: ledc
+    pin: GPIO5
+    id: output_led
+    inverted: false
+    frequency: 200Hz
+    zero_means_zero: true
+
+number:
+  - platform: template
+    id: pwm_led_freq
+    name: "Częst. LED"
+    unit_of_measurement: "Hz"
+    internal: true
+    optimistic: true
+    initial_value: 1220
+    min_value: 50
+    max_value: 2000
+    step: 100
+    mode: box
+    on_value:
+      - output.ledc.set_frequency:
+          id: output_led
+          frequency: !lambda |-
+            return x;
+
+  - platform: template
+    id: pwm_lamp_1_freq
+    name: "Częst. Lampa #1"
+    unit_of_measurement: "Hz"
+    optimistic: true
+    internal: true
+    initial_value: 1220
+    min_value: 50
+    max_value: 2000
+    step: 100
+    mode: box
+    on_value:
+      - output.ledc.set_frequency:
+          id: output_lamp_1
+          frequency: !lambda |-
+            return x;
+            
+light:
+  - platform: monochromatic
+    id: light_1
+    name: "Łazienka LED"
+    output: output_led
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: monochromatic
+    id: light_2
+    name: "Łazienka Lampa #1"
+    output: output_lamp_1
+    restore_mode: RESTORE_DEFAULT_OFF

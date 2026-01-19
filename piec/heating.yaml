@@ -2,7 +2,7 @@ switch:
   - platform: gpio
     id: wlacznik_pieca
     pin:
-      number: GPIO5
+      number: GPIO6
       inverted: true
       mode: 
         output: true
@@ -10,3 +10,45 @@ switch:
     name: "Sterownik pieca"
     web_server:
       sorting_group_id: heating_group
+            
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+      inverted: true
+    id: pos_1
+    name: "Tryb manualny"
+    web_server:
+      sorting_group_id: heating_group    
+
+  - platform: gpio
+    pin:
+      number: GPIO5
+      mode: INPUT_PULLUP
+      inverted: true
+    id: pos_2
+    name: "Tryb auto"
+    web_server:
+      sorting_group_id: heating_group
+                  
+text_sensor:
+  - platform: template
+    name: "Tryb grzania"
+    id: switch_position
+    update_interval: 200ms
+    lambda: |-
+      if (id(pos_1).state) return {"manual"};
+      if (id(pos_2).state) return {"auto"};
+      return {"off"};
+    on_value:
+      then:
+        - lambda: |-
+            if (x == "manual") {
+              id(wlacznik_pieca).turn_on();
+            } else if (x == "off") {
+              id(wlacznik_pieca).turn_off();
+            } else if (x == "auto") {
+              ESP_LOGI("switch", "Auto - dalsze akcje tutaj");
+            }
+            

@@ -11,19 +11,15 @@ substitutions:
   ap_ssid: "Kuchnia sufit MCU"
   step: "5"
   interval_ms: "100"
-
+  esphome_min_version: 2025.5.0
+  
 packages:
   api: !include common/api.yaml  
   logger: !include common/logger.yaml
   light: !include common/c6/status-led.yaml
   wifi: !include common/wifi.yaml
   ota: !include common/ota.yaml
-
-globals:
-  - id: brightness
-    type: int
-    restore_value: no
-    initial_value: '60'
+  diag: !include common/diagnostic.yaml
 
 esp32:
   board: esp32-c6-devkitm-1
@@ -31,7 +27,7 @@ esp32:
     type: esp-idf
 
 esphome:
-  min_version: 2025.5.0
+  min_version: ${esphome_min_version}
   name_add_mac_suffix: false
   name: ${device_name}
   friendly_name: ${friendly_name}
@@ -40,20 +36,24 @@ esphome:
   project:
     name: ${project_name}
     version: ${project_version}
-
+  on_boot:
+    priority: -100
+    then:
+      - light.turn_off: light_0
+      
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   domain: !secret network_domain
   reboot_timeout: 60min
-  fast_connect: true  
+  fast_connect: true 
   ap:
     ssid: "Kuchnia sufit MCU"    
     password: !secret ap_password
   manual_ip:
     gateway: 10.1.30.1
     subnet: 255.255.255.0
-    static_ip: 10.1.30.26
+    static_ip: ${static_ip}
     
 captive_portal:
 
@@ -81,168 +81,40 @@ button:
     web_server:
       sorting_group_id: advanced_group
 
-  - platform: template
-    id: btn_minus
-    name: "Minus"
-    on_press:
-      then:
-        - light.dim_relative:
-            id: light_0
-            relative_brightness: -2%
-        - lambda: |-
-            id(brightness) = id(light_0).current_values.get_brightness();
-
-  - platform: template
-    name: "Plus"    
-    id: button_up
-    on_press:
-      then:
-        - light.dim_relative:
-            id: light_0
-            relative_brightness: 2%
-        - lambda: |-
-            id(brightness) = id(light_0).current_values.get_brightness();
-
-text_sensor:
-  - platform: debug
-    device:
-      name: "Device Info"
-      web_server:
-        sorting_group_id: device_info_group
-    reset_reason:
-      name: "Reset Reason"
-      web_server:
-        sorting_group_id: device_info_group
-
-  - platform: uptime
-    name: Uptime
-
-  - platform: version
-    name: "ESPHome version"
-
-  - platform: template
-    name: "Project Version"
-    id: esphome_project_version_text_short
-    icon: "mdi:information-box"
-    entity_category: "diagnostic"
-    update_interval: 600s
-    lambda: |-
-      return { ESPHOME_PROJECT_VERSION };
-
-  - platform: template
-    name: "Project Version Detailed"
-    id: esphome_project_version_text_detailed
-    icon: "mdi:information-box"
-    entity_category: "diagnostic"
-    update_interval: 600s
-    lambda: |-
-      return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };
-
-  - platform: template
-    name: "Project Name"
-    id: esphome_project_name
-    icon: "mdi:information-box"
-    entity_category: "diagnostic"
-    update_interval: 600s
-    lambda: |-
-      return { ESPHOME_PROJECT_NAME };
-
 binary_sensor:
   - platform: status
-    name: "Status"     
+    name: "Status"
     web_server:
       sorting_group_id: device_info_group
-
+      
   - platform: gpio
     pin:
-      number: GPIO0
-      inverted: true
+      number: GPIO20
       mode:
         input: true
         pullup: true
-    name: "SW-1"
-    id: "input_sw_1"
-    on_click:
-      - min_length: 50ms
-        max_length: 750ms
-        then: 
-        - if:
-            condition:
-              light.is_off: light_0
-            then:
-              - light.turn_on:
-                  id: light_0
-                  brightness: 50%
-            else:            
-              - light.dim_relative:
-                  id: light_0
-                  relative_brightness: 2%
-                  transition_length: 0.02s
-                  brightness_limits:
-                      min_brightness: 0%
-                      max_brightness: 100%
-              - delay: 0.05s              
-    on_press:      
-      - while:
-          condition:
-            binary_sensor.is_on: input_sw_1
-          then:
-            - light.dim_relative:
-                id: light_0
-                relative_brightness: 2%
-                transition_length: 0.02s
-                brightness_limits:
-                    min_brightness: 0%
-                    max_brightness: 100%
-            - delay: 0.05s
-
-  - platform: gpio
-    pin:
-      number: GPIO1
       inverted: true
-      mode:      
-        input: true
-        pullup: true
-    name: "SW-2"
-    id: "input_sw_2"
-    on_click:
-      - min_length: 50ms
-        max_length: 750ms
-        then:
-          - if:
-              condition:
-                light.is_on: light_0
-              then:
-                - light.turn_off: light_0                
-    on_press:      
-      - while:
-          condition:
-            binary_sensor.is_on: input_sw_2
-          then:
-            - light.dim_relative:
-                id: light_0
-                relative_brightness: -2%
-                transition_length: 0.02s
-                brightness_limits:
-                    min_brightness: 0%
-                    max_brightness: 100%
-            - delay: 0.05s          
+    name: "SW-1"
+    filters:
+      - delayed_on: 10ms
+    on_press:
+      - light.toggle: light_0
 
 output:
   - platform: ledc
-    pin: GPIO4
+    pin: GPIO21
     id: output_led
-    frequency: 200Hz
+    frequency: 1200Hz
     zero_means_zero: true
-
+    inverted: true   
+    
 number:
   - platform: template
-    name: pwm_change
-    optimistic: true
-    initial_value: 200
-    min_value: 50
-    max_value: 2000
-    step: 100
+    name: pwm_change 
+    initial_value: 1200
+    min_value: 100
+    max_value: 100000
+    step: 10
     mode: box
     on_value:
       - output.ledc.set_frequency:

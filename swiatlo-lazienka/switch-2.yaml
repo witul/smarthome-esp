@@ -1,0 +1,22 @@
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO22
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "SW-2"
+    id: "input_sw_2"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - if:
+          condition:
+            lambda: 'return id(dim_direction);'
+          then:
+            - script.execute: dim_down
+          else:
+            - script.execute: dim_up
+      - lambda: 'id(dim_direction) = !id(dim_direction);'  # zmiana kierunku po każdym naciśnięciu

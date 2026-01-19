@@ -69,7 +69,7 @@ button:
 sensor:
   - platform: ld2410
     light:
-      name: "Jasność pomieszczeni (LD2410)"
+      name: "Jasność pomieszczenia (LD2410)"
       id: "ld2410_brightness_sensor"
     moving_distance:
       name : "Odleglość cel ruch"
