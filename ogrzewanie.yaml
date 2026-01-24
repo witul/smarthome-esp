@@ -1,10 +1,24 @@
-esphome:
-  name: ogrzewanie-mcu
+substitutions:
+  static_ip_address: 10.1.30.19
+  device_name: ogrzewanie-mcu
   friendly_name: Sterownik Ogrzewania
-  name_add_mac_suffix: false
-  project:
-    name: iot.home
-    version: '1.0'
+  comment: "Sterowanie ogrzewaniem podłogowym i grzejnikiem | IP ${static_ip_address}"
+  icon: "mdi:light"
+  project_name: iot.home
+  project_version: "1.0"
+
+  esphome_min_version: 2025.5.0
+  static_ip_gateway: 10.1.30.1
+  static_ip_netmask: 255.255.255.0
+  ap_ssid: ${friendly_name} AP"
+  web_server_port: "8080"
+  reboot_timeout: 60min
+
+  max_floor_temp: 32.0
+  min_floor_temp: 26.0
+  min_heating_run_time: 300sec
+  min_heating_off_time: 300sec
+  min_idle_time: 30sec
 
 packages:
   1wire: !include ogrzewanie/1wire.yaml
@@ -12,35 +26,17 @@ packages:
   i2c: !include ogrzewanie/i2c.yaml
   wifi: !include ogrzewanie/wifi.yaml
   api: !include ogrzewanie/api.yaml
-  logging: !include ogrzewanie/logging.yaml
+  logging: !include ogrzewanie/logging.yaml  
+  esphome: !include ogrzewanie/esphome.yaml
+  webserver: !include ogrzewanie/webserver.yaml  
   heating: !include ogrzewanie/heating.yaml
 
 esp32:
   board: esp32dev
   framework:
-    type: arduino
-    version: recommended
-
-
-web_server:
-  port: 8080
-  version: 3
-  include_internal: true
+    type: esp-idf
 
 uart:
   rx_pin: 3
   tx_pin: 1
   baud_rate: 9600
-
-binary_sensor:
-  - platform: template
-    name: "Grzałka - Stan"
-    lambda: |-
-      return (id(grzalka_moc).state > 5.0);
-    id: grzalka_status
-
-
-sensor:
-  - platform: uptime
-    name: "Uptime"
-    id: mcu_uptime

@@ -1,15 +1,21 @@
-
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
-  domain: ".iot.home.arpa"
-  
+  domain: !secret network_domain
+  reboot_timeout: 60min
+  fast_connect: true 
   ap:
-    ssid: "Ogrzewanie MCU AP"
-    password: "kukuryku"
-    
-mdns:
-  disabled: false
+    ssid: ${ap_ssid}
+    password: !secret ap_password
+  manual_ip:
+    gateway: ${static_ip_gateway}
+    subnet: ${static_ip_netmask}
+    static_ip: ${static_ip_address}
+
+captive_portal: {}
+
+mdns: 
+  disabled: true
   
 sensor:
   - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
@@ -26,3 +32,4 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
+

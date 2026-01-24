@@ -1,0 +1,14 @@
+esphome:  
+  min_version: ${esphome_min_version}
+  name: ${device_name}
+  friendly_name: ${friendly_name}
+  comment: ${comment}
+  name_add_mac_suffix: false
+  project:
+    name: ${project_name}
+    version: ${project_version}
+
+sensor:
+  - platform: uptime
+    name: "Uptime"
+    id: mcu_uptime    
