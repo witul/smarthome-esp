@@ -12,10 +12,14 @@ text_sensor:
 
   - platform: uptime
     name: Uptime
+    web_server:
+      sorting_group_id: device_info_group
 
   - platform: version
     name: "ESPHome"
-    internal: true
+    internal: true    
+    web_server:
+      sorting_group_id: device_info_group
 
   - platform: template
     name: "Wersja"
@@ -24,6 +28,8 @@ text_sensor:
     icon: "mdi:information-box"
     entity_category: "diagnostic"
     update_interval: 600s
+    web_server:
+      sorting_group_id: device_info_group    
     lambda: |-
       return { ESPHOME_PROJECT_VERSION };
 
@@ -32,6 +38,8 @@ text_sensor:
     id: esphome_project_version_text_detailed
     icon: "mdi:information-box"
     entity_category: "diagnostic"
+    web_server:
+      sorting_group_id: device_info_group
     update_interval: 600s
     lambda: |-
       return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };
@@ -41,6 +49,8 @@ text_sensor:
     id: esphome_project_name
     icon: "mdi:information-box"
     entity_category: "diagnostic"
+    web_server:
+      sorting_group_id: device_info_group    
     update_interval: 600s
     lambda: |-
       return { ESPHOME_PROJECT_NAME };

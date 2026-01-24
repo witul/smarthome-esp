@@ -2,7 +2,7 @@ web_server:
   port: ${web_server_port}
   include_internal: true
   enable_private_network_access: true  
-  log: true  
+  log: true
 
   local: true  
   css_include: './v3/www.css'

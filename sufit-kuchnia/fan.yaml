@@ -1,7 +1,7 @@
 switch:
   - platform: gpio
     id: fan_relay
-    name: "Zasilanie"
+    name: "Wentylator"
     device_id: kitchen_fan
     pin: ${fan_relay_gpio}
     restore_mode: RESTORE_DEFAULT_OFF
@@ -28,7 +28,7 @@ binary_sensor:
         input: true
         pullup: true
       inverted: true
-    name: "Przycisk wentylatora"
+    name: "Włącznik"
     id: fan_button
     web_server:
       sorting_group_id: fan_group    
@@ -41,7 +41,6 @@ binary_sensor:
           then:
             - switch.turn_on:
                 id: fan_relay
-            - delay: 200ms
           else:
             - switch.turn_off:
                 id: fan_relay
