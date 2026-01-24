@@ -24,3 +24,4 @@ sensor:
       id: grzalka_wsp_mocy
     update_interval: 5s
 
+modbus:

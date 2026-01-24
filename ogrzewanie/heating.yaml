@@ -1,0 +1,74 @@
+    
+switch:      
+  - platform: gpio
+    name: "Ogrzewanie - Grzejnik"
+    pin:
+      number: 17
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+  - platform: gpio
+    name: "Ogrzewanie - Łazienka"    
+    pin:
+      number: 2
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON      
+
+  - platform: gpio
+    name: "Ogrzewanie Salon I"
+    pin:
+      number: 16
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF      
+  
+  - platform: gpio
+    name: "Ogrzewanie Salon II"
+    pin:
+      number: 0
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+
+  - platform: gpio
+    name: "Ogrzewanie Kuchnia"
+    pin:
+      number: 4
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF      
+      
+  - platform: gpio
+    name: "Ogrzewanie - Pokój"
+    pin:
+      number: 5
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+      
+  - platform: gpio
+    name: "Ogrzewanie - Sypialnia"
+    pin:
+      number: 18
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_OFF
+    
+  - platform: gpio
+    name: "Grzałka przekaznik"
+    id: grzalka_przekaznik
+    pin:
+      number: 19
+      mode:
+        output: true
+      inverted: true
+    restore_mode: RESTORE_DEFAULT_ON

@@ -1,0 +1,8 @@
+logger:
+  baud_rate: 0
+
+      
+select:
+  - platform: logger
+    name: "Logger select"
+      
