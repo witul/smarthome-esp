@@ -6,6 +6,10 @@ esphome:
     name: iot.home
     version: '1.0'
 
+packages:
+  1wire: !include ogrzewanie/1wire.yaml
+  pzemac: !include ogrzewanie/pzemac.yaml
+
 esp32:
   board: esp32dev
   framework:
@@ -25,15 +29,7 @@ wifi:
     password: "kukuryku"
 
 modbus:
-
-one_wire:
-  - platform: gpio
-    pin: GPIO14
-    id: one_wire_1      
-  - platform: gpio
-    pin: GPIO27
-    id: one_wire_2
-    
+  
 logger:
   baud_rate: 0
 
@@ -66,15 +62,6 @@ binary_sensor:
       return (id(grzalka_moc).state > 5.0);
     id: grzalka_status
 
-button:
-  - platform: template
-    name: "Test 1-wire bus"
-    internal: true
-    on_press: 
-      then:
-        - lambda: |-
-            id(one_wire_1).search();
-            id(one_wire_1).dump_config();
 
 sensor:
   - platform: uptime
@@ -95,114 +82,8 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
-
-  - platform: dallas_temp
-    id: temp_1
-    address: "0xcc65c7d446950328"
-    one_wire_id: one_wire_1
-    name: "Temp Pod. Salon #1"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1    
-
-  - platform: dallas_temp  
-    id: temp_2
-    one_wire_id: one_wire_1
-    address: "0x9751cfd446dd8928"
-    name: "Temp Pod. Salon #2"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1    
     
-  - platform: dallas_temp
-    id: temp_3  
-    address: "0x943c01e076247d28"
-    name: "Temp Pod. Salon #3"
-    one_wire_id: one_wire_1
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1
-    
-  - platform: dallas_temp
-    id: temp_4
-    address: "0x9e3c01e076378028"
-    one_wire_id: one_wire_1
-    name: "Temp Pod. Pokój"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1    
-
-  - platform: dallas_temp
-    id: temp_5
-    address: "0x73215fd446309f28"
-    one_wire_id: one_wire_1
-    name: "Temp Pod. Sypialnia"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1    
-
-  - platform: dallas_temp
-    id: temp_6
-    address: "0x285eb5d44646be28"
-    one_wire_id: one_wire_1
-    name: "Temp Pod. Łazienka"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1
-
-  - platform: dallas_temp
-    id: temp_7
-    address: "0x270000003a0c8828"
-    one_wire_id: one_wire_2
-    name: "Temp grz. Łazienka"
-    unit_of_measurement: "°C"
-    icon: "mdi:water-percent"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1
-    
-
-
-  - platform: pzemac
-    current:
-      name: "Grzałka - Prąd"
-      internal: true
-      id: grzalka_prad
-    voltage:
-      name: "Grzałka - Napięcie"
-      internal: true
-      id: grzalka_napiecie
-    energy:
-      name: "Grzałka - Energia"
-      id: grzalka_energia
-    power:
-      name: "Grzałka - Moc"
-      id: grzalka_moc
-    frequency:
-      name: "Grzałka - Częstotliwość"
-      internal: true
-      id: grzalka_czestotliwosc
-    power_factor:
-      name: "Grzałka - Wsp. mocy"
-      internal: true
-      id: grzalka_wsp_mocy
-    update_interval: 5s
-
-
-switch:
-      
+switch:      
   - platform: gpio
     name: "Ogrzewanie - Grzejnik"
     pin:
@@ -278,5 +159,5 @@ switch:
       
 select:
   - platform: logger
-    name: "Logger select"    
+    name: "Logger select"
     

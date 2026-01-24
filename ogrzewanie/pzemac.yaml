@@ -1,0 +1,26 @@
+sensor:
+  - platform: pzemac
+    current:
+      name: "Grzałka - Prąd"
+      internal: true
+      id: grzalka_prad
+    voltage:
+      name: "Grzałka - Napięcie"
+      internal: true
+      id: grzalka_napiecie
+    energy:
+      name: "Grzałka - Energia"
+      id: grzalka_energia
+    power:
+      name: "Grzałka - Moc"
+      id: grzalka_moc
+    frequency:
+      name: "Grzałka - Częstotliwość"
+      internal: true
+      id: grzalka_czestotliwosc
+    power_factor:
+      name: "Grzałka - Wsp. mocy"
+      internal: true
+      id: grzalka_wsp_mocy
+    update_interval: 5s
+
