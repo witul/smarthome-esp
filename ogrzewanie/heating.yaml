@@ -189,11 +189,7 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C
-      - name: Away
-        default_target_temperature_low: 19 °C
-      - name: Sleep
-        default_target_temperature_low: 21 °C
+        default_target_temperature_low: 22°C
 
   - platform: thermostat    
     name: "Podłogówka Sypialnia"
@@ -211,9 +207,7 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C        
-      - name: Away
-        default_target_temperature_low: 19 °C        
+        default_target_temperature_low: 22°C
 
   - platform: thermostat    
     id: "podlogowka_pokoj"
@@ -231,9 +225,7 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C        
-      - name: Away
-        default_target_temperature_low: 19 °C                
+        default_target_temperature_low: 21°C
 
   - platform: thermostat    
     id: "podlogowka_lazienka"
@@ -249,6 +241,4 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C      
-      - name: Shower
-        default_target_temperature_low: 23 °C
+        default_target_temperature_low: 22°C
