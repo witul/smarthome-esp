@@ -174,12 +174,14 @@ climate:
     id: "podlogowka_salon"
     min_idle_time: ${min_idle_time}
     min_heating_run_time: ${min_heating_run_time}
+    max_heating_run_time: ${max_heating_run_time}
     min_heating_off_time: ${min_heating_off_time}
-
+    supplemental_heating_delta: ${supplemental_heating_delta}
+    supplemental_heating_action:
+      - switch.turn_on: heating_kuchnia
     heat_action:
       - switch.turn_on: heating_salon_1
-      - switch.turn_on: heating_salon_2
-      - switch.turn_on: heating_kuchnia    
+      - switch.turn_on: heating_salon_2      
     idle_action:
       - switch.turn_off: heating_salon_1
       - switch.turn_off: heating_salon_2
@@ -187,7 +189,7 @@ climate:
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 21 °C        
+        default_target_temperature_low: 21 °C
       - name: Away
         default_target_temperature_low: 19 °C
       - name: Sleep

@@ -16,9 +16,11 @@ substitutions:
 
   max_floor_temp: 32.0
   min_floor_temp: 26.0
-  min_heating_run_time: 300sec
-  min_heating_off_time: 300sec
+  min_heating_run_time: 150sec
+  min_heating_off_time: 150sec
+  max_heating_run_time: 300sec
   min_idle_time: 30sec
+  supplemental_heating_delta: 7.0
 
 packages:
   1wire: !include ogrzewanie/1wire.yaml

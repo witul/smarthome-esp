@@ -7,7 +7,7 @@ switch:
     restore_mode: RESTORE_DEFAULT_OFF
     inverted: true
     web_server:
-      sorting_group_id: fan_group    
+      sorting_group_id: fan_group
 
   - platform: gpio
     id: fan_high_speed
@@ -20,8 +20,7 @@ switch:
       sorting_group_id: fan_group
 
 binary_sensor:
-  - platform: gpio
-    internal: true
+  - platform: gpio    
     pin:
       number: ${fan_switch_gpio}
       mode:
@@ -31,16 +30,16 @@ binary_sensor:
     name: "Włącznik"
     id: fan_button
     web_server:
-      sorting_group_id: fan_group    
+      sorting_group_id: fan_group
     filters:
-      - delayed_on_off: 20ms
-    on_press:
-      - if:
-          condition:
-            switch.is_off: fan_relay
-          then:
-            - switch.turn_on:
-                id: fan_relay
-          else:
-            - switch.turn_off:
-                id: fan_relay
+      - delayed_on_off: ${debounce_time}
+    on_click:
+      - switch.toggle: fan_relay
+
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - switch.turn_off: fan_relay
+      - switch.turn_off: fan_high_speed

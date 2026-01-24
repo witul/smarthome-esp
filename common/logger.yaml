@@ -1,5 +1,5 @@
 logger:
-  level: DEBUG
+  level: WARN
   baud_rate: 0
 
 select:

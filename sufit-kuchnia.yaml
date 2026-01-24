@@ -20,6 +20,7 @@ substitutions:
   ap_ssid: ${friendly_name} AP"
   web_server_port: "8080"
   reboot_timeout: 60min
+  debounce_time: 40ms
   
 packages:
   api: !include common/api.yaml  
@@ -59,3 +60,4 @@ esphome:
   areas:
     - id: kitchen_area
       name: "Kuchnia"
+
