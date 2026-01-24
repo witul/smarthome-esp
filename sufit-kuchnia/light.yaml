@@ -1,0 +1,73 @@
+# Częstotliwość PWM    
+number:
+  - platform: template
+    internal: true
+    name: Częstotliwość PWM     
+    device_id: kitchen_light
+    optimistic: true
+    initial_value: 20000
+    min_value: 100
+    max_value: 100000
+    step: 100
+    mode: box
+    on_value:
+      - output.ledc.set_frequency:
+          id: output_led
+          frequency: !lambda |-
+            return x;
+    web_server:
+      sorting_group_id: light_group
+      
+# Wyjście PWM
+output:
+  - platform: ledc
+    pin: ${light_output_pwm_gpio}
+    id: output_led
+    zero_means_zero: true
+    inverted: true
+    frequency: 20000 Hz
+    min_power: 0.06    
+
+# Światło
+light:
+  - platform: monochromatic
+    id: light_0
+    device_id: kitchen_light
+    name: "Oświetlenie blatu"
+    output: output_led
+    gamma_correct: 1.0
+    restore_mode: RESTORE_AND_OFF
+    web_server:
+      sorting_group_id: light_group    
+
+# Włącznik chwilowy
+binary_sensor:
+  - platform: gpio
+    internal: true
+    pin:
+      number: ${light_switch_gpio}
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Przycisk światła"
+    id: light_button
+    web_server:
+      sorting_group_id: light_group    
+    filters:
+      - delayed_on_off: 20ms
+    on_press:
+      - if:
+          condition:
+            light.is_on: light_0
+          then:
+            - light.turn_on:
+                id: light_0
+                brightness: 0%
+                transition_length: 200ms
+            - delay: 200ms
+            - light.turn_off: light_0
+          else:
+            - light.turn_on:
+                id: light_0
+                brightness: 100%

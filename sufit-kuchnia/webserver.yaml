@@ -1,0 +1,27 @@
+web_server:
+  port: ${web_server_port}
+  include_internal: true
+  enable_private_network_access: true  
+  log: true  
+
+  local: true  
+  css_include: './v3/www.css'
+  js_include: "./v3/www.js"  
+  version: 3  
+
+  sorting_groups:
+    - id: advanced_group
+      name: "Zaawansowane"
+      sorting_weight: 10
+
+    - id: device_info_group
+      name: "Info"
+      sorting_weight: 11
+
+    - id: fan_group
+      name: "Wentylator"
+      sorting_weight: 9
+    
+    - id: light_group
+      name: "Oświetlenie"
+      sorting_weight: 8

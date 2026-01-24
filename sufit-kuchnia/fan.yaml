@@ -1,0 +1,47 @@
+switch:
+  - platform: gpio
+    id: fan_relay
+    name: "Zasilanie"
+    device_id: kitchen_fan
+    pin: ${fan_relay_gpio}
+    restore_mode: RESTORE_DEFAULT_OFF
+    inverted: true
+    web_server:
+      sorting_group_id: fan_group    
+
+  - platform: gpio
+    id: fan_high_speed
+    name: "II bieg"
+    device_id: kitchen_fan
+    pin: ${fan_hi_speed_gpio}
+    restore_mode: RESTORE_DEFAULT_OFF
+    inverted: true
+    web_server:
+      sorting_group_id: fan_group
+
+binary_sensor:
+  - platform: gpio
+    internal: true
+    pin:
+      number: ${fan_switch_gpio}
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Przycisk wentylatora"
+    id: fan_button
+    web_server:
+      sorting_group_id: fan_group    
+    filters:
+      - delayed_on_off: 20ms
+    on_press:
+      - if:
+          condition:
+            switch.is_off: fan_relay
+          then:
+            - switch.turn_on:
+                id: fan_relay
+            - delay: 200ms
+          else:
+            - switch.turn_off:
+                id: fan_relay

@@ -1,11 +1,12 @@
 text_sensor:
   - platform: debug
     device:
-      name: "Device Info"
+      name: "Urządzenie"
       web_server:
         sorting_group_id: device_info_group
+      internal: true
     reset_reason:
-      name: "Reset Reason"
+      name: "Powód resetu"
       web_server:
         sorting_group_id: device_info_group
 
@@ -13,10 +14,12 @@ text_sensor:
     name: Uptime
 
   - platform: version
-    name: "ESPHome version"
+    name: "ESPHome"
+    internal: true
 
   - platform: template
-    name: "Project Version"
+    name: "Wersja"
+    internal: true    
     id: esphome_project_version_text_short
     icon: "mdi:information-box"
     entity_category: "diagnostic"
@@ -25,7 +28,7 @@ text_sensor:
       return { ESPHOME_PROJECT_VERSION };
 
   - platform: template
-    name: "Project Version Detailed"
+    name: "Szczegóły"
     id: esphome_project_version_text_detailed
     icon: "mdi:information-box"
     entity_category: "diagnostic"
@@ -34,7 +37,7 @@ text_sensor:
       return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };
 
   - platform: template
-    name: "Project Name"
+    name: "Projekt"
     id: esphome_project_name
     icon: "mdi:information-box"
     entity_category: "diagnostic"
@@ -42,3 +45,18 @@ text_sensor:
     lambda: |-
       return { ESPHOME_PROJECT_NAME };
 
+# Status urządzenia
+binary_sensor:
+  - platform: status
+    name: "Status"
+    web_server:
+      sorting_group_id: device_info_group
+
+
+# Restart ESP
+button:
+  - platform: restart
+    name: "Restart ESP"
+    id: restart_esp
+    web_server:
+      sorting_group_id: advanced_group

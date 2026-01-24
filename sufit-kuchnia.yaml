@@ -1,25 +1,36 @@
 substitutions:
-  reboot_timeout: 60min
-  static_ip: 10.1.30.26
+  static_ip_address: 10.1.30.26
   device_name: kuchnia-sufit
   friendly_name: Sufit kuchnia
-  area: ""
-  comment: "Oświetlenie, wentylacja, sensory w kuchni | IP ${static_ip}"
+  comment: "Oświetlenie, wentylacja, sensory w kuchni | IP ${static_ip_address}"
   icon: "mdi:light"
+  
   project_name: "kuchnia-sufit.iot"
   project_version: "1.0"
-  ap_ssid: "Kuchnia sufit MCU"
-  step: "5"
-  interval_ms: "100"
-  esphome_min_version: 2025.5.0
+
+  light_switch_gpio: GPIO20
+  light_output_pwm_gpio: GPIO21
+  fan_relay_gpio: GPIO22
+  fan_hi_speed_gpio: GPIO23
+  fan_switch_gpio: GPIO15
+
+  esphome_min_version: 2025.5.0  
+  static_ip_gateway: 10.1.30.1
+  static_ip_netmask: 255.255.255.0  
+  ap_ssid: ${friendly_name} AP"
+  web_server_port: "8080"
+  reboot_timeout: 60min  
   
 packages:
   api: !include common/api.yaml  
   logger: !include common/logger.yaml
-  light: !include common/c6/status-led.yaml
-  wifi: !include common/wifi.yaml
+  statusLight: !include common/c6/status-led.yaml
   ota: !include common/ota.yaml
   diag: !include common/diagnostic.yaml
+  fan: !include sufit-kuchnia/fan.yaml
+  light: !include sufit-kuchnia/light.yaml
+  wifi: !include sufit-kuchnia/wifi.yaml
+  server: !include sufit-kuchnia/webserver.yaml
 
 esp32:
   board: esp32-c6-devkitm-1
@@ -28,103 +39,23 @@ esp32:
 
 esphome:
   min_version: ${esphome_min_version}
-  name_add_mac_suffix: false
   name: ${device_name}
   friendly_name: ${friendly_name}
   comment: ${comment}
-  area: ${area}
+  name_add_mac_suffix: false
   project:
     name: ${project_name}
     version: ${project_version}
-  on_boot:
-    priority: -100
-    then:
-      - light.turn_off: light_0
-      
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  domain: !secret network_domain
-  reboot_timeout: 60min
-  fast_connect: true 
-  ap:
-    ssid: "Kuchnia sufit MCU"    
-    password: !secret ap_password
-  manual_ip:
-    gateway: 10.1.30.1
-    subnet: 255.255.255.0
-    static_ip: ${static_ip}
-    
-captive_portal:
 
-mdns:
-  disabled: false
+  devices:
+    - id: kitchen_light
+      name: "Oświetlenie kuchni"
+      area_id: kitchen_area
 
-web_server:
-  port: 8080
-  include_internal: true
-  log: true
-  version: 3  
-  sorting_groups:
-    - id: advanced_group
-      name: "Zaawansowane"
-      sorting_weight: 10
-
-    - id: device_info_group
-      name: "Info"
-      sorting_weight: 11
-
-button:
-  - platform: restart
-    name: "Restart ESP"
-    id: restart_esp
-    web_server:
-      sorting_group_id: advanced_group
-
-binary_sensor:
-  - platform: status
-    name: "Status"
-    web_server:
-      sorting_group_id: device_info_group
-      
-  - platform: gpio
-    pin:
-      number: GPIO20
-      mode:
-        input: true
-        pullup: true
-      inverted: true
-    name: "SW-1"
-    filters:
-      - delayed_on: 10ms
-    on_press:
-      - light.toggle: light_0
-
-output:
-  - platform: ledc
-    pin: GPIO21
-    id: output_led
-    frequency: 1200Hz
-    zero_means_zero: true
-    inverted: true   
-    
-number:
-  - platform: template
-    name: pwm_change 
-    initial_value: 1200
-    min_value: 100
-    max_value: 100000
-    step: 10
-    mode: box
-    on_value:
-      - output.ledc.set_frequency:
-          id: output_led
-          frequency: !lambda |-
-            return x;
-
-light:
-  - platform: monochromatic
-    id: light_0
-    name: "Kuchnia LED"
-    output: output_led
-    restore_mode: RESTORE_DEFAULT_OFF
+    - id: kitchen_fan
+      name: "Wentylator"
+      area_id: kitchen_area
+  
+  areas:
+    - id: kitchen_area
+      name: "Kuchnia"

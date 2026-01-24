@@ -5,5 +5,7 @@ light:
     rgb_order: GRB
     num_leds: 1
     chipset: ws2812
+    internal: true
+    restore_mode: RESTORE_AND_OFF    
     web_server:
       sorting_group_id: advanced_group
