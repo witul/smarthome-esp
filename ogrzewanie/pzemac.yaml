@@ -1,27 +1,74 @@
 sensor:
   - platform: pzemac
     current:
-      name: "Grzałka - Prąd"
-      internal: true
+      name: "Natężenie"
       id: grzalka_prad
-    voltage:
-      name: "Grzałka - Napięcie"
+      unit_of_measurement: "A"
+      device_class: current
+      state_class: measurement
+      device_id: grzalka_device
+      accuracy_decimals: 3
       internal: true
-      id: grzalka_napiecie
-    energy:
-      name: "Grzałka - Energia"
-      id: grzalka_energia
-    power:
-      name: "Grzałka - Moc"
-      id: grzalka_moc
-    frequency:
-      name: "Grzałka - Częstotliwość"
-      internal: true
-      id: grzalka_czestotliwosc
-    power_factor:
-      name: "Grzałka - Wsp. mocy"
-      internal: true
-      id: grzalka_wsp_mocy
-    update_interval: 5s
+      web_server:
+        sorting_group_id: grzalka_group
 
+    voltage:
+      name: "Napięcie"      
+      id: grzalka_napiecie
+      unit_of_measurement: "V"
+      device_class: voltage
+      state_class: measurement  
+      device_id: grzalka_device
+      accuracy_decimals: 1
+      internal: true
+      web_server:
+        sorting_group_id: grzalka_group
+
+    energy:
+      name: "Energia"
+      id: grzalka_energia
+      unit_of_measurement: "Wh"
+      device_class: energy
+      state_class: total_increasing
+      device_id: grzalka_device
+      accuracy_decimals: 1
+      web_server:
+        sorting_group_id: grzalka_group
+        
+    power:
+      name: "Moc"
+      id: grzalka_moc
+      unit_of_measurement: "W"
+      device_class: power
+      state_class: measurement
+      device_id: grzalka_device
+      accuracy_decimals: 4
+      web_server:
+        sorting_group_id: grzalka_group
+        
+    frequency:
+      name: "Częstotliwość"      
+      id: grzalka_czestotliwosc
+      unit_of_measurement: "Hz"
+      device_class: frequency
+      state_class: measurement        
+      device_id: grzalka_device
+      accuracy_decimals: 1
+      web_server:
+        sorting_group_id: grzalka_group
+      internal: true
+        
+    power_factor:
+      name: "Wsp. mocy"      
+      id: grzalka_wsp_mocy
+      device_class: power_factor
+      state_class: measurement      
+      device_id: grzalka_device
+      accuracy_decimals: 2      
+      web_server:
+        sorting_group_id: grzalka_group
+      internal: true
+              
+    update_interval: 5s
+  
 modbus:

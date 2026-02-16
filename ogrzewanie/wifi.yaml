@@ -1,11 +1,13 @@
+substitutions: !include ../common/subs.yaml
+
 wifi:
   ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  domain: !secret network_domain
-  reboot_timeout: 60min
-  fast_connect: true 
+  password: !secret wifi_password  
+  domain: ${domain}
+  reboot_timeout: ${reboot_timeout}
+  fast_connect: ${wifi_fast_connect}
   ap:
-    ssid: ${ap_ssid}
+    ssid: ${friendly_name} AP"
     password: !secret ap_password
   manual_ip:
     gateway: ${static_ip_gateway}
@@ -15,16 +17,18 @@ wifi:
 captive_portal: {}
 
 mdns: 
-  disabled: true
-  
+  disabled: ${disable_mdns}
+
 sensor:
-  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+  - platform: wifi_signal
     name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 30s
     entity_category: "diagnostic"
-
-  - platform: copy # Reports the WiFi signal strength in %
+    web_server: 
+      sorting_group_id: diagnostic_group
+       
+  - platform: copy
     source_id: wifi_signal_db
     name: "WiFi Signal Percent"
     filters:
@@ -32,4 +36,6 @@ sensor:
     unit_of_measurement: "Signal %"
     entity_category: "diagnostic"
     device_class: ""
+    web_server: 
+      sorting_group_id: diagnostic_group
 

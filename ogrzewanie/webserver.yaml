@@ -1,4 +1,12 @@
+substitutions: !include ../common/subs.yaml
+
 web_server:
-  port: 8080
-  version: 3
+  port: ${web_server_port}
+  log: ${web_server_log}
   include_internal: true
+  enable_private_network_access: true
+  local: true
+  
+  css_include: './v3/www.css'
+  js_include: "./v3/www.js"
+  version: 3

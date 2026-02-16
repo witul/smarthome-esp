@@ -1,0 +1,9 @@
+esphome_min_version: 2025.5.0
+static_ip_gateway: 10.1.30.1
+static_ip_netmask: 255.255.255.0
+web_server_port: "8080"
+reboot_timeout: 60min
+project_name: iot.home
+domain: ".iot.home.arpa"
+disable_mdns: false
+wifi_fast_connect: true

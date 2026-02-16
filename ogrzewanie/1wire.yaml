@@ -1,24 +1,30 @@
 
 one_wire:
   - platform: gpio
-    pin: GPIO14
+    pin: $one_wire_pin_A
     id: one_wire_1
 
   - platform: gpio
-    pin: GPIO27
+    pin: $one_wire_pin_B
     id: one_wire_2
 
 
 button:
-  - platform: template
-    name: "Test 1-wire bus"
+  - name: "Test 1-wire bus"
+    platform: template  
     internal: true
     on_press: 
       then:
         - lambda: |-
             id(one_wire_1).search();
             id(one_wire_1).dump_config();
-
+        - lambda: |-
+            id(one_wire_2).search();
+            id(one_wire_2).dump_config();            
+            
+    web_server:
+      sorting_group_id: diagnostic_group
+      
 sensor:
   - platform: dallas_temp
     id: temp_1

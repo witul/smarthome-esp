@@ -21,7 +21,7 @@ packages:
   diag: !include piec-v2/diag.yaml    
   heating: !include piec-v2/heating.yaml
   lux: !include piec-v2/light_sensor.yaml
-  presence: !include piec-v2/presence_sensor.yaml
+#  presence: !include piec-v2/presence_sensor.yaml
 #  ld2410_sensor: !include piec/ld2410_sensor.yaml
   climate: !include piec-v2/climate_sensor.yaml  
 
@@ -43,16 +43,21 @@ esp32:
     type: esp-idf
 
 i2c:
-  sda: GPIO6
-  scl: GPIO7
+  sda: GPIO7
+  scl: GPIO6
   frequency: 400kHz
-  scan: false
-  
-#uart:
-#  id: uart_sensor
-#  tx_pin: GPIO16
-#  rx_pin: GPIO17
-#  baud_rate: 256000
+  scan: true
+
+logger:
+  logs:
+    i2c: DEBUG
+    bme280: DEBUG
+
+uart:
+  id: uart_sensor
+  rx_pin: GPIO4  
+  tx_pin: GPIO5
+  baud_rate: 256000
   
 web_server:
   port: 8080

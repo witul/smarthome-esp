@@ -8,7 +8,7 @@ substitutions:
   project_name: "kuchnia-sufit.iot"
   project_version: "1.0"
 
-  light_switch_gpio: GPIO20
+  light_switch_gpio: GPIO11
   light_output_pwm_gpio: GPIO21
   fan_relay_gpio: GPIO22
   fan_hi_speed_gpio: GPIO23

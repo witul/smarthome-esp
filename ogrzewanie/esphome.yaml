@@ -1,14 +1,11 @@
+substitutions: !include ../common/subs.yaml
+
 esphome:  
   min_version: ${esphome_min_version}
-  name: ${device_name}
-  friendly_name: ${friendly_name}
-  comment: ${comment}
-  name_add_mac_suffix: false
+  friendly_name: "${friendly_name}"
+  name: "${device_name}"
+  comment: "${comment_description} | IP ${static_ip_address} | v${project_version}"
   project:
     name: ${project_name}
     version: ${project_version}
-
-sensor:
-  - platform: uptime
-    name: "Uptime"
-    id: mcu_uptime    
+  name_add_mac_suffix: false

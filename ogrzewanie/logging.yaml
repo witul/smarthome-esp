@@ -1,7 +1,76 @@
+debug:
+  update_interval: ${debug_update_interval}
+
 logger:
   baud_rate: 0
-      
+  level: DEBUG
+  initial_level: INFO
+
 select:
   - platform: logger
-    name: "Logger select"
-      
+    name: "Poziom logowania"
+    web_server: 
+      sorting_group_id: diagnostic_group
+
+button:
+  - platform: restart
+    name: "Restart ESP"
+    id: restart_esp
+    web_server:
+      sorting_group_id: diagnostic_group
+
+text_sensor:
+  - platform: debug
+    device:
+      name: "Informacje o urządzeniu"
+      web_server:
+        sorting_group_id: diagnostic_group    
+    
+    reset_reason:
+      name: "Przyczyna restartu"
+      web_server:
+        sorting_group_id: diagnostic_group
+
+  - name: Uptime
+    platform: uptime
+    web_server:
+        sorting_group_id: diagnostic_group    
+
+  - name: "Nazwa projektu"      
+    id: esphome_project_name
+    platform: template
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    web_server:
+        sorting_group_id: diagnostic_group
+    lambda: |-
+      return { ESPHOME_PROJECT_NAME };        
+
+  - name: "Wersja projektu"
+    id: esphome_project_version_text_short
+    platform: template
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    web_server:
+        sorting_group_id: diagnostic_group
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION };
+
+    
+  - name: "Wersja ESPHome"
+    platform: version
+    web_server:
+        sorting_group_id: diagnostic_group
+
+  - name: "Szczegóły projektu"    
+    id: esphome_project_version_text_detailed
+    platform: template
+    icon: "mdi:information-box"
+    entity_category: "diagnostic"
+    update_interval: 600s
+    web_server:
+        sorting_group_id: diagnostic_group          
+    lambda: |-
+      return { ESPHOME_PROJECT_VERSION " " + App.get_compilation_time() };

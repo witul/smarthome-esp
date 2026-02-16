@@ -1,4 +1,0 @@
-i2c:
-  sda: GPIO23
-  scl: GPIO22
-  scan: false

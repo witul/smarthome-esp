@@ -1,29 +1,29 @@
 # smarthome-esp
 
-
 ## ESP8266
+
 ### Standard pinout
 
-| Port | Group | Type |
-|---|---|---|
-| GPIO1 | UART | TX |
-| GPIO3 | UART | RX |
-| GPIO4 | I2C | SDA |
-| GPIO5 | I2C | SCL |
-| GPIO12 | SPI | MISO |
-| GPIO13 | SPI | MOSI |
-| GPIO14 | SPI | CLK |
-| GPIO15 | SPI | CS |
-| GPIO16 | RTC | - |
-| GPIO17 | ADC | - |
-| GPIO0 | Boot | ? |
-| GPIO2 | Boot | ? |
-| GPIO6   | SDIO | - |
-| GPIO7   | SDIO | - |
-| GPIO8   | SDIO | - |
-| GPIO9   | SDIO | - |
-| GPIO10 | SDIO | - |
-| GPIO11 | SDIO | - |
+| Port   | Group | Type |
+|--------|-------|------|
+| GPIO1  | UART  | TX   |
+| GPIO3  | UART  | RX   |
+| GPIO4  | I2C   | SDA  |  
+| GPIO5  | I2C   | SCL  |  
+| GPIO12 | SPI   | MISO |
+| GPIO13 | SPI   | MOSI |
+| GPIO14 | SPI   | CLK  |  
+| GPIO15 | SPI   | CS   |
+| GPIO16 | RTC   | -    |
+| GPIO17 | ADC   | -    |
+| GPIO0  | Boot  | ?    |
+| GPIO2  | Boot  | ?    |
+| GPIO6  | SDIO  | -    |
+| GPIO7  | SDIO  | -    |
+| GPIO8  | SDIO  | -    |
+| GPIO9  | SDIO  | -    |
+| GPIO10 | SDIO  | -    |
+| GPIO11 | SDIO  | -    |
 
 ***
 
@@ -38,40 +38,123 @@
 | 9765Hz    | 13        | 8192  |
 | 19531Hz   | 12        | 4096  |
 
-
 ### Łazienka
 
 Kontroler oświetlenia
-
 **Static IP: 10.1.30.24**
 
 ESP32-C6-Devkit-1
 
 - 4 wejścia
-    - SW-1
-    - SW-2
-    - SW-3
-    - SW-4
+    -SW-1
+    -SW-2
+    -SW-3
+    -SW-4
 
 - 3 wyjścia PWM (open drain) (2 obecnie + 1 w przyszłości)
-    - 13.4V (Lampa)
-    - 12.0V (LED)
-    - 12.0V (Oświetlenie blatu, potencjalnie)
+    -13.4V (Lampa)
+    -12.0V (LED)
+    -12.0V (Oświetlenie blatu, potencjalnie)
 
 - Sygnalizacja błędów kolorami diody na płytce
 
 ## Obsługiwane wejście
 
-| Input | PIN       | steps |
-|-----------|-----------|-------|
-| SW-1   | 16       |65536  |
-| SW-2   | 15       |32768  |
-| SW-3   | 14       |16384  |
-| SW-3   | 13       | 8192  |
+| Input | PIN      | steps |
+|-------|----------|-------|
+| SW-1  | 16       |65536  |
+| SW-2  | 15       |32768  |
+| SW-3  | 14       |16384  |
+| SW-3  | 13       | 8192  |
 
 ## Obsługiwane wyjścia
+
 | Output | PIN  |
 |--------|------|
 |PWM-1   | GPIO4|
 |PWM-2   | GPIO5|
 |PWM-3   | GPIO6|
+
+***
+
+## Ogrzewanie (ogrzewanie-mcu)
+
+### Switch
+
+| Nazwa                 | ID                  |GPIO |
+|-----------------------|---------------------|-----|
+| Ogrzewanie - Łazienka | heating_lazienka    |   2 |
+| Ogrzewanie - Grzejnik | grzejnik_podlogowka |  17 |
+| Ogrzewanie Salon I    | heating_salon_1     |  16 |
+| Ogrzewanie Salon II   | heating_salon_2     |   0 |
+| Ogrzewanie Kuchnia    | heating_kuchnia     |   4 |
+| Ogrzewanie Pokój      | heating_pokoj       |   5 |
+| Ogrzewanie Sypialnia  | heating_sypialnia   |  18 |
+| Grzałka przekaznik    | grzalka_przekaznik  |  19 |
+
+***
+
+### Binary sensor
+
+| Nazwa                       |
+|-----------------------------|
+|Podłoga Salon #1 przegrzana  |
+|Podłoga Salon #2 przegrzana  |
+|Podłoga kuchnia przegrzana   |
+|Podłoga pokój przegrzana     |
+|Podłoga sypialnia przegrzana |
+|Podłoga łazienka przegrzana  |
+
+***
+
+## Summary for ESP32 (ESP-IDF)
+
+|  PIN    |    Type     | ID                   |Komponent     |   Flags    |
+|:-------:|:-----------:|----------------------|--------------|-----------:|
+| **0**   |  **GPIO**   | heating_salon_2      |switch        |    **S**   |
+| **1**   |  **UART**   | uart_tx              |pzemac        |            |
+| **2**   |  **GPIO**   | heating_lazienka     |switch        |    **S**   |
+| **3**   |  **UART**   | uart_rx              |pzemac        |            |
+| **4**   |  **GPIO**   | heating_kuchnia      |switch        |            |
+| **5**   |  **GPIO**   | heating_pokoj        |switch        |    **S**   |
+| **13**  |    -        |  -                   |-             |            |
+| **14**  | **1-wire**  | one_wire_1           |              |            |
+| **16**  |  **GPIO**   | heating_salon_1      |switch        |            |
+| **17**  |  **GPIO**   | grzejnik_podlogowka  |switch        |            |
+| **18**  |  **GPIO**   | heating_sypialnia    |switch        |            |
+| **19**  |  **GPIO**   | grzalka_przekaznik   |switch        |            |
+| **21**  |    -        | -                    |              |            |
+| **22**  |  **I2C**    | scl                  |              |            |
+| **23**  |  **I2C**    | sda                  |              |            |
+| **25**  |  **GPIO**   | grzalka_power_set    |              |            |
+| **26**  |  **GPIO**   | grzalka_time_set     |              |            |
+| **27**  | **1-wire**  | one_wire_2           |              |            |
+| **32**  |    -        |  -                   |-             |            |
+| **33**  |    -        |  -                   |-             |            |
+
+### Flags legend
+
+|Flag  |Description    |
+|------|---------------|
+|**S** | Strapping pin |
+
+***
+
+### Roadmap
+
+1. **Management heater parameters**
+    - Add power control on GPIO25
+    - Add time control on GPIO26
+
+2. **Release following ports and use PCF8574 i2c expander instead**
+    - GPIO 0
+    - GPIO 2
+    - GPIO 4
+    - GPIO 5
+    - GPIO 16
+    - GPIO 17
+    - GPIO 18
+
+***
+
+

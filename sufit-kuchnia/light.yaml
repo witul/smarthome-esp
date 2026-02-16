@@ -43,7 +43,6 @@ light:
 # Włącznik chwilowy
 binary_sensor:
   - platform: gpio
-    internal: true
     pin:
       number: ${light_switch_gpio}
       mode:
@@ -53,21 +52,23 @@ binary_sensor:
     name: "Przycisk światła"
     id: light_button
     web_server:
-      sorting_group_id: light_group    
+      sorting_group_id: light_group      
     filters:
-      - delayed_on_off: 20ms
-    on_press:
+      - delayed_on_off: 40ms
+    on_press:     
       - if:
           condition:
             light.is_on: light_0
           then:
-            - light.turn_on:
-                id: light_0
-                brightness: 0%
-                transition_length: 200ms
-            - delay: 200ms
             - light.turn_off: light_0
           else:
             - light.turn_on:
                 id: light_0
                 brightness: 100%
+
+
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - light.turn_off: light_0

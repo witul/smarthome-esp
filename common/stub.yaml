@@ -1,0 +1,11 @@
+esphome:
+  name: $device_name
+  project:
+      name: $project_name
+      version: $project_version
+  min_version: $esphome_min_version
+  name_add_mac_suffix: false
+    
+wifi:  
+  manual_ip:
+    static_ip: $static_ip_address

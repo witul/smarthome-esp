@@ -1,44 +1,140 @@
 substitutions:
-  static_ip_address: 10.1.30.19
   device_name: ogrzewanie-mcu
-  friendly_name: Sterownik Ogrzewania
-  comment: "Sterowanie ogrzewaniem podłogowym i grzejnikiem | IP ${static_ip_address}"
-  icon: "mdi:light"
-  project_name: iot.home
-  project_version: "1.0"
+  friendly_name: Sterownik Ogrzewania  
+  comment_description: "Sterowanie ogrzewaniem podłogowym i grzejnikiem"
+  project_version: "2.0"  
 
-  esphome_min_version: 2025.5.0
-  static_ip_gateway: 10.1.30.1
-  static_ip_netmask: 255.255.255.0
-  ap_ssid: ${friendly_name} AP"
-  web_server_port: "8080"
-  reboot_timeout: 60min
+  web_server_log: true
+  debug_update_interval: 5s
+  
+  static_ip_address: 10.1.30.19
+  
+  uart_rx_pin: GPIO4
+  uart_tx_pin: GPIO5
+  uart_baud_rate: 9600
 
-  max_floor_temp: 32.0
-  min_floor_temp: 26.0
-  min_heating_run_time: 150sec
-  min_heating_off_time: 150sec
-  max_heating_run_time: 300sec
-  min_idle_time: 30sec
-  supplemental_heating_delta: 7.0
+  i2c_sda_pin: GPIO6
+  i2c_scl_pin: GPIO7
+  i2c_scan_mode: false
+
+  one_wire_pin_A: GPIO18
+  one_wire_pin_B: GPIO19
+
+globals:
+  - id: czas_ms
+    type: uint32_t
+    restore_value: true
+    initial_value: '800'
 
 packages:
-  1wire: !include ogrzewanie/1wire.yaml
-  pzemac: !include ogrzewanie/pzemac.yaml
-  i2c: !include ogrzewanie/i2c.yaml
-  wifi: !include ogrzewanie/wifi.yaml
-  api: !include ogrzewanie/api.yaml
-  logging: !include ogrzewanie/logging.yaml  
   esphome: !include ogrzewanie/esphome.yaml
-  webserver: !include ogrzewanie/webserver.yaml  
+  webserver: !include ogrzewanie/webserver.yaml
+  logging: !include ogrzewanie/logging.yaml
+
+  wifi: !include ogrzewanie/wifi.yaml
+  1wire: !include ogrzewanie/1wire.yaml
+  
+  pzemac: !include ogrzewanie/pzemac.yaml
+  heating-pcf: !include ogrzewanie/pcf8574.yaml
   heating: !include ogrzewanie/heating.yaml
 
+i2c:
+  sda: $i2c_sda_pin
+  scl: $i2c_scl_pin
+  scan: $i2c_scan_mode
+
+uart:
+  rx_pin: $uart_rx_pin
+  tx_pin: $uart_tx_pin
+  baud_rate: $uart_baud_rate
+
 esp32:
-  board: esp32dev
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
   framework:
     type: esp-idf
 
-uart:
-  rx_pin: 3
-  tx_pin: 1
-  baud_rate: 9600
+api:
+  password: !secret homeassistant_api_key
+
+ota:
+  platform: esphome
+  password: !secret ota_key
+
+esphome:
+  areas: 
+    - name: "Łazienka"    
+      id: bathroom
+      
+  devices:
+    - name: "Grzałka"
+      id: grzalka_device      
+      area_id: bathroom
+
+web_server:      
+  sorting_groups:
+    - id: heating_group
+      name: "Ogrzewanie Podłogowe"
+      sorting_weight: 4
+
+    - id: lock_group
+      name: "Blokady"
+      sorting_weight: 5
+
+    - id: grzalka_group
+      name: "Grzałka"
+      sorting_weight: 6
+
+    - id: diagnostic_group
+      name: "Diagnostyka"      
+      sorting_weight: 7
+
+    - id: device_info_group
+      name: "Informacje o urządzeniu"
+      sorting_weight: 8
+
+script:
+  - id: impuls_heater_power
+    mode: restart
+    then:
+      - output.turn_on: grzalka_power_signal
+      - delay: !lambda "return id(czas_ms);"
+      - output.turn_off: grzalka_power_signal
+      - delay: !lambda "return id(czas_ms);"
+      
+
+  - id: impuls_heater_time
+    mode: restart
+    then:  
+      - output.turn_on: grzalka_time_signal
+      - delay: !lambda "return id(czas_ms);"
+      - output.turn_off: grzalka_time_signal
+      - delay: !lambda "return id(czas_ms);"
+
+button:
+  - platform: template
+    name: "Grzalka power signal"
+    on_press:
+      - script.execute: impuls_heater_power
+
+  - platform: template
+    name: "Grzalka time signal"
+    on_press:
+      - script.execute: impuls_heater_time      
+
+number:
+  - platform: template
+    name: "Czas (ms)"
+    id: czas_ms_number
+    mode: box
+    min_value: 0
+    max_value: 2000
+    step: 100
+    unit_of_measurement: "ms"
+    optimistic: true
+    restore_value: true
+    set_action:
+      - lambda: |-
+          id(czas_ms) = (uint32_t)x;
+    web_server:
+      sorting_group_id: grzalka_group

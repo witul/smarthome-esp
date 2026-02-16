@@ -1,219 +1,209 @@
-    
-switch:      
-  - platform: gpio
-    name: "Ogrzewanie - Grzejnik"
-    pin:
-      number: 17
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_ON
-
-  - platform: gpio
-    name: "Ogrzewanie - Łazienka"
-    id: heating_lazienka
-    pin:
-      number: 2
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_ON      
-
-  - platform: gpio
-    name: "Ogrzewanie Salon I"
-    id: heating_salon_1
-    pin:
-      number: 16
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_OFF      
-  
-  - platform: gpio
-    name: "Ogrzewanie Salon II"
-    id: heating_salon_2
-    pin:
-      number: 0
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_OFF
-
-  - platform: gpio
-    name: "Ogrzewanie Kuchnia"
-    id: heating_kuchnia
-    pin:
-      number: 4
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_OFF
-      
-  - platform: gpio
-    name: "Ogrzewanie - Pokój"
-    id: heating_pokoj
-    pin:
-      number: 5
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_OFF
-      
-  - platform: gpio
-    name: "Ogrzewanie - Sypialnia"
-    id: heating_sypialnia
-    pin:
-      number: 18
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_OFF
-    
-  - platform: gpio
-    name: "Grzałka przekaznik"
-    id: grzalka_przekaznik
-    pin:
-      number: 19
-      mode:
-        output: true
-      inverted: true
-    restore_mode: RESTORE_DEFAULT_ON
+substitutions:
+    max_floor_temp: 32.0
+    min_floor_temp: 26.0
+    min_air_temperature: 18
+    max_air_temperature: 25
+    target_temperature_step: 0.5
+    current_temperature_step: 0.1
+    min_heating_run_time: 150sec
+    min_heating_off_time: 150sec
+    min_idle_time: 30sec
 
 sensor:
-  - platform: homeassistant
-    id: cz_t_temperature
+  - name: "Temp. Salon"
+    platform: homeassistant
+    id: temperatura_salon
     entity_id: sensor.cz_t_temperature
-    unit_of_measurement: "°C"
+    unit_of_measurement: "°C"    
 
-  - platform: homeassistant
+  - name: "Temp. Łazienka"
+    platform: homeassistant
     id: lazienka_temperature
-    entity_id: sensor.cz_t_temperature
+    entity_id: sensor.lazienka_piec_temperatura_pomieszczenia
     unit_of_measurement: "°C"
+    filters:
+      - lambda: |-
+          if (isnan(x)) return id(temperatura_salon).state;
+          return x;
 
-  - platform: homeassistant
+  - name: "Temp. Sypialnia"
+    platform: homeassistant
     id: ht_1_temperature
-    entity_id: sensor.ht_1_temperature
-    unit_of_measurement: "°C"
+    entity_id: sensor.ht_1_temperatura
+    unit_of_measurement: "°C"    
 
-  - platform: homeassistant
+  - name: "Temp. Pokój"
+    platform: homeassistant
     id: ht_2_temperature
-    entity_id: sensor.ht_2_temperature
-    unit_of_measurement: "°C"
+    entity_id: sensor.ht_2_temperatura
+    unit_of_measurement: "°C"    
 
-  - platform: homeassistant
-    id: cz_t_humidity
-    entity_id: sensor.cz_t_humidity
+  - name: "Wilg. Salon"
+    platform: homeassistant
+    id: wilgotnosc_salon
+    entity_id: sensor.cz_t_humidity    
 
-  - platform: homeassistant
+  - name: "Wilg. Łazienka"
+    platform: homeassistant
     id: lazienka_humidity
-    entity_id: sensor.cz_t_humidity
+    entity_id: sensor.lazienka_piec_wilgotnosc_pomieszczenia    
+    filters:
+      - lambda: |-
+          if (isnan(x)) return id(wilgotnosc_salon).state;
+          return x;    
 
-  - platform: homeassistant
+  - name: "Wilg. Sypialnia"
+    platform: homeassistant
     id: ht_1_humidity
-    entity_id: sensor.ht_1_humidity
-
-  - platform: homeassistant
+    entity_id: sensor.ht_1_wilgotnosc
+    
+  - name: "Wilg. Pokój"
+    platform: homeassistant
     id: ht_2_humidity
-    entity_id: sensor.ht_2_humidity
-
+    entity_id: sensor.ht_2_wilgotnosc    
 
 binary_sensor:
-  - platform: template
-    name: "Podłoga Salon #1 przegrzana"
+  - name: "Podłoga salon #1 przegrzana"
+    platform: template  
+    internal: true
     lambda: |-
       return id(temp_1).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_salon_1
 
-  - platform: template
-    name: "Podłoga Salon #2 przegrzana"
+  - name: "Podłoga salon #2 przegrzana"
+    platform: template
+    internal: true
     lambda: |-
       return id(temp_2).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_salon_2
 
-  - platform: template
-    name: "Podłoga kuchnia przegrzana"
+  - name: "Podłoga kuchnia przegrzana"
+    platform: template
+    internal: true
     lambda: |-
       return id(temp_3).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_kuchnia
 
-  - platform: template
-    name: "Podłoga pokój przegrzana"
+  - name: "Podłoga pokój przegrzana"
+    platform: template  
+    internal: true
     lambda: |-
       return id(temp_4).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_pokoj
 
-  - platform: template
-    name: "Podłoga sypialnia przegrzana"
+  - name: "Podłoga sypialnia przegrzana"
+    platform: template
+    internal: true
     lambda: |-
       return id(temp_5).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_sypialnia
 
-  - platform: template
-    name: "Podłoga łazienka przegrzana"
+  - name: "Podłoga łazienka przegrzana"
+    platform: template
+    internal: true
     lambda: |-
       return id(temp_6).state > ${max_floor_temp};
     on_press:
       - switch.turn_off: heating_lazienka
 
-  - platform: template
-    name: "Grzałka - Stan"
+  - name: "Grzałka - Stan"
+    platform: template    
+    id: grzalka_status
     lambda: |-
-      return (id(grzalka_moc).state > 5.0);
-    id: grzalka_status      
+      return (id(grzalka_prad).state > 0);
+    device_id: grzalka_device
+    web_server:
+      sorting_group_id: grzalka_group
+
+  - name: "Blokada pętli grzejnika"
+    platform: template  
+    id: blokada_obiegu_grzejnika    
+    lambda: |-
+      return (id(temp_7).state > ${max_floor_temp} || id(grzalka_status).state);
+    web_server:
+      sorting_group_id: lock_group
+
+  - name: "Blokada grzałki"
+    platform: template  
+    id: blokada_grzalki
+    lambda: |-
+      return !id(grzalka_przekaznik).state || id(grzejnik_podlogowka).state;
+    web_server:
+      sorting_group_id: lock_group
+    device_id: grzalka_device
 
 climate:
-  - platform: thermostat    
-    name: "Podłogówka Salon"
-    sensor: cz_t_temperature
-    humidity_sensor: cz_t_humidity
+  - name: "Podłogówka Salon"
+    platform: thermostat      
     id: "podlogowka_salon"
+    
+    sensor: temperatura_salon
+    humidity_sensor: wilgotnosc_salon
+    
     min_idle_time: ${min_idle_time}
     min_heating_run_time: ${min_heating_run_time}
-    max_heating_run_time: ${max_heating_run_time}
     min_heating_off_time: ${min_heating_off_time}
-    supplemental_heating_delta: ${supplemental_heating_delta}
-    supplemental_heating_action:
-      - switch.turn_on: heating_kuchnia
+
     heat_action:
       - switch.turn_on: heating_salon_1
-      - switch.turn_on: heating_salon_2      
+      - switch.turn_on: heating_salon_2
+      - switch.turn_on: heating_kuchnia
     idle_action:
       - switch.turn_off: heating_salon_1
       - switch.turn_off: heating_salon_2
       - switch.turn_off: heating_kuchnia
+    
     default_preset: Home
     preset:
       - name: Home
         default_target_temperature_low: 22°C
+    
+    visual:
+      min_temperature: ${min_air_temperature}
+      max_temperature: ${max_air_temperature}
+      temperature_step:
+        target_temperature: ${target_temperature_step}
+        current_temperature: ${current_temperature_step}
 
-  - platform: thermostat    
-    name: "Podłogówka Sypialnia"
+  - name: "Podłogówka Sypialnia"
+    platform: thermostat    
     id: "podlogowka_sypialnia"
     sensor: ht_1_temperature
     humidity_sensor: ht_1_humidity
+
     min_idle_time: ${min_idle_time}
     min_heating_run_time: ${min_heating_run_time}
     min_heating_off_time: ${min_heating_off_time}
 
     heat_action:
       - switch.turn_on: heating_sypialnia
+
     idle_action:
       - switch.turn_off: heating_sypialnia
+
     default_preset: Home
     preset:
       - name: Home
-        default_target_temperature_low: 22°C
+        default_target_temperature_low: 21°C
 
-  - platform: thermostat    
-    id: "podlogowka_pokoj"
-    name: "Podłogówka Pokój"
+    visual:
+      min_temperature: ${min_air_temperature}
+      max_temperature: ${max_air_temperature}
+      temperature_step:
+        target_temperature: ${target_temperature_step}
+        current_temperature: ${current_temperature_step}
+
+  - name: "Podłogówka Pokój"
+    platform: thermostat
+    id: "podlogowka_pokoj"    
     sensor: ht_2_temperature
     humidity_sensor: ht_2_humidity
+
     min_idle_time: ${min_idle_time}
     min_heating_run_time: ${min_heating_run_time}
     min_heating_off_time: ${min_heating_off_time}
@@ -222,23 +212,41 @@ climate:
       - switch.turn_on: heating_pokoj
     idle_action:
       - switch.turn_off: heating_pokoj
+    
     default_preset: Home
     preset:
       - name: Home
         default_target_temperature_low: 21°C
 
-  - platform: thermostat    
-    id: "podlogowka_lazienka"
-    name: "Podłogówka Łazienka"
+    visual:
+      min_temperature: ${min_air_temperature}
+      max_temperature: ${max_air_temperature}
+      temperature_step:
+        target_temperature: ${target_temperature_step}
+        current_temperature: ${current_temperature_step}
+
+  - name: "Podłogówka Łazienka"
+    platform: thermostat    
+    id: "podlogowka_lazienka"    
     sensor: lazienka_temperature
+    
     min_idle_time: ${min_idle_time}
     min_heating_run_time: ${min_heating_run_time}
     min_heating_off_time: ${min_heating_off_time}
+    
     heat_action:
       - switch.turn_on: heating_lazienka
     idle_action:
       - switch.turn_off: heating_lazienka
+    
     default_preset: Home
     preset:
       - name: Home
         default_target_temperature_low: 22°C
+
+    visual:
+      min_temperature: ${min_air_temperature}
+      max_temperature: ${max_air_temperature}
+      temperature_step:
+        target_temperature: ${target_temperature_step}
+        current_temperature: ${current_temperature_step}

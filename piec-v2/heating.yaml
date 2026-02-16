@@ -2,7 +2,7 @@ switch:
   - platform: gpio
     id: wlacznik_pieca
     pin:
-      number: GPIO10
+      number: GPIO20
       inverted: false
       mode: 
         output: true
